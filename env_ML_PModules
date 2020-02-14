@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+#installing pip
+wget https://bootstrap.pypa.io/get-pip.py
+sudo python3 get-pip.py
+rm get-pip.py
+
+#was succesfully dowload
+pip -V
+
+#modules
+pip install --user numpy==1.15
+pip install --user scipy==1.3
+pip install --user pycodestyle==2.5
+pip install --user matplotlib
+pip install --user pillow
+
+#update and installs
+sudo apt-get update
+sudo apt-get install python3-tk
