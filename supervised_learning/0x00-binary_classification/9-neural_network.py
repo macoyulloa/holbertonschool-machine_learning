@@ -19,6 +19,7 @@ class NeuralNetwork():
             raise TypeError("nodes must be an integer")
         if nodes < 1:
             raise ValueError("nodes must be a positive integer")
+
         self.__W1 = np.random.normal(size=(nodes, nx))
         self.__b1 = np.zeros((nodes, 1))
         self.__A1 = 0
@@ -26,32 +27,32 @@ class NeuralNetwork():
         self.__b2 = 0
         self.__A2 = 0
 
-        @property
-        def W1(self):
-            """Getter method for W1 attribute"""
-            return self.__W1
+    @property
+    def W1(self):
+        """Getter method for W1 hidden layer"""
+        return self.__W1
 
-        @property
-        def b1(self):
-            """Getter method for b1 attribute"""
-            return self.__b1
+    @property
+    def b1(self):
+        """Getter method for b1 for the hidden layer"""
+        return self.__b1
 
-        @property
-        def A1(self):
-            """Getter method for A1 attribute"""
-            return self.__A1
+    @property
+    def A1(self):
+        """Getter A1 activated output for hidden layer"""
+        return self.__A1
 
-        @property
-        def W2(self):
-            """Getter method for W2 attribute"""
-            return self.__W2
+    @property
+    def W2(self):
+        """Getter W2 output neuron"""
+        return self.__W2
 
-        @property
-        def b2(self):
-            """Getter method for b2 attribute"""
-            return self.__b2
+    @property
+    def b2(self):
+        """Getter b2 attribute, bias for neuron"""
+        return self.__b2
 
-        @property
-        def A2(self):
-            """Getter method for A2 attribute"""
-            return self.__A2
+    @property
+    def A2(self):
+        """Getter A2 attribute, activated output neuron"""
+        return self.__A2
