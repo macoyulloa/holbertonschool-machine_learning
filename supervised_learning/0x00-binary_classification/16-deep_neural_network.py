@@ -24,12 +24,12 @@ class DeepNeuralNetwork():
         self.cache = {}
         self.weights = {}
         for l in range(self.L):
-            if layers[l] <= 0 and type(layers[l]) is not int:
+            if layers[l] <= 0 or type(layers[l]) is not int:
                 raise TypeError("layers must be a list of positive integers")
             if l is 0:
                 he_init = np.random.randn(layers[l], nx)*np.sqrt(2/nx)
                 self.weights['W' + str(l+1)] = he_init
-            else:
+            if l > 0:
                 he_init1 = np.random.randn(layers[l], layers[l-1])
                 he_init2 = np.sqrt(2/layers[l-1])
                 self.weights['W' + str(l+1)] = he_init1 * he_init2
