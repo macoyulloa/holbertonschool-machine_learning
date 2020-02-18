@@ -29,7 +29,7 @@ class DeepNeuralNetwork():
             if l is 0:
                 he_init = np.random.randn(layers[l], nx)*np.sqrt(2/nx)
                 self.weights['W' + str(l+1)] = he_init
-            if l > 0:
+            else:
                 he_init1 = np.random.randn(layers[l], layers[l-1])
                 he_init2 = np.sqrt(2/layers[l-1])
                 self.weights['W' + str(l+1)] = he_init1 * he_init2
