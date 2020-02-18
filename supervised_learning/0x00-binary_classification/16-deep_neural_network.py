@@ -14,7 +14,7 @@ class DeepNeuralNetwork():
             raise ValueError("nx must be a positive integer")
         if type(layers) is not list:
             raise TypeError("layers must be a list of positive integers")
-        if len(layers) == 0:
+        if len(layers) is 0:
             raise TypeError("layers must be a list of positive integers")
 
         self.nx = nx
@@ -25,7 +25,6 @@ class DeepNeuralNetwork():
         for l in range(self.L):
             if layers[l] <= 0 and type(layers[l]) is not int:
                 raise TypeError("layers must be a list of positive integers")
-            # initialized weight using He et al, layer[0]=nodes of first layer
             if l is 0:
                 he_init = np.random.randn(layers[l], nx)*np.sqrt(2/nx)
                 self.weights['W' + str(l+1)] = he_init
@@ -33,5 +32,4 @@ class DeepNeuralNetwork():
                 he_init1 = np.random.randn(layers[l], layers[l-1])
                 he_init2 = np.sqrt(2/layers[l-1])
                 self.weights['W' + str(l+1)] = he_init1 * he_init2
-            # bias network initialized to 0's
             self.weights['b' + str(l + 1)] = np.zeros((layers[l], 1))
