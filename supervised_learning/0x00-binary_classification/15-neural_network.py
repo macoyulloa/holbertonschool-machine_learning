@@ -118,13 +118,12 @@ class NeuralNetwork():
             self.__A1, self.__A2 = self.forward_prop(X)
             self.gradient_descent(X, Y, self.__A1, self.__A2, alpha)
             cost = self.cost(Y, self.__A2)
-            cost_list.append(cost)
             if verbose is True:
-                if (i % step == 0):
+                if (i % step == 0 or step == iterations):
                     print("Cost after {} iterations: {}".format(i, cost))
-
+                    cost_list.append(cost)
         if graph is True:
-            x_list = np.arange(0, iterations + 1)
+            x_list = np.arange(0, iterations + 1, step)
             y_list = cost_list
             plt.plot(x_list, y_list)
             plt.title('Training Cost')
