@@ -6,6 +6,8 @@ import numpy as np
 
 def one_hot_decode(one_hot):
     """converts one-hot matrix inot a numerical vector"""
+    if len(one_hot) == 0 or type(one_hot) != np.ndarray:
+        return None
     vector = np.arange(one_hot.shape[1])
     for i in range(len(one_hot)):
         for j in range(len(one_hot[0])):
