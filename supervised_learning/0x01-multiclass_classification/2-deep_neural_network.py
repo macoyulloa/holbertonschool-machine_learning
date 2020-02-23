@@ -148,16 +148,15 @@ class DeepNeuralNetwork():
 
     def save(self, filename):
         """saves the object to a file, pickle format"""
-        fileObject = open("2-output.pkl", 'wb')
-        pickle.dump(filename, fileObject)
-        fileObject.close()
-        return fileObject
+        if filename != '*.pkl':
+            filename = filename + '.pkl'
+        with open(filename, 'wb') as f:
+            pickle.dump(self, f)
 
     def load(filename):
         """loads a pickled DeepNeuralNetwork"""
         if filename:
-            fileObject = open(filename, 'rb')
-            fileOpen = pickle.load(fileObject)
-            fileObject.close()
+            with open(filename, 'rb') as f:
+                fileOpen = pickle.load(f)
             return fileOpen
         return None
