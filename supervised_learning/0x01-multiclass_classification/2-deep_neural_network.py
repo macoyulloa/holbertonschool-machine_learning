@@ -154,10 +154,12 @@ class DeepNeuralNetwork():
         with open(filename, 'wb') as f:
             pickle.dump(self, f)
 
+    @staticmethod
     def load(filename):
         """loads a pickled DeepNeuralNetwork"""
-        if filename:
+        try:
             with open(filename, 'rb') as f:
                 fileOpen = pickle.load(f)
             return fileOpen
-        return None
+        except FileNotFoundError:
+            return None
