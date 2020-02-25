@@ -8,6 +8,7 @@ def create_layer(prev, n, activation):
     """crate the layers of the model and variables"""
     kernel_initializer = tf.contrib.layers.variance_scaling_initializer(
         mode="FAN_AVG")
-    layer = tf.layers.dense(prev, n, activation=activation,
-                            kernel_initializer=kernel_initializer)
-    return layer
+    layer = tf.layers.Dense(units=n, activation=activation,
+                            kernel_initializer=kernel_initializer,
+                            name="layer")
+    return layer(prev)
