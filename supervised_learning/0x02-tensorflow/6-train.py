@@ -14,24 +14,35 @@ forward_prop = __import__('2-forward_prop').forward_prop
 def train(X_train, Y_train, X_valid, Y_valid, layer_sizes,
           activations, alpha, iterations, save_path="/tmp/model.ckpt"):
     """saving the neural network"""
-    graph = tf.graph()
-    with graph.as_default():
-        x, y = create_placeholders(X_train.shape[0], Y_train.shape[0])
-        y_pred = forward_prop(x, layer_sizes, activations)
-        accuracy = calculate_accuracy(y, y_pred)
-        loss = calculate_loss(y, y_pred)
-        train_op = create_train_op(loss, alpha)
-        tf.add_to_collecton("my_colection", x, y, y_pred, accuracy, loss)
-    saver = tf.train.Saver()
-    with tf.Session(graph=graph) as session:
-        for i in range(iterations):
-            session.run(accuracy)
-            session.run(loss)
-            session.run(train_op)
+    x, y = create_placeholders(X_train.shape[1], Y_train.shape[1])
+    tf.add_to_collection('x', x)
+    tf.add_to_collection('y', y)
+    y_pred = forward_prop(x, layer_sizes, activations)
+    tf.add_to_collection('y_pred', y_pred)
+    accuracy = calculate_accuracy(y, y_pred)
+    tf.add_to_collection('accuracy', accuracy)
+    loss = calculate_loss(y, y_pred)
+    tf.add_to_collection('loss', loss)
+    train_op = create_train_op(loss, alpha)
+    tf.add_to_collection('train_op', train_op)
 
-            counter += 1
+    print(tf.get_default_graph().get_all_collection_keys())
+    saver = tf.train.Saver()
+    init = tf.global_variables_initializer()
+
+    with tf.Session() as sess:
+        sess.run(init)
+        for i in range(iterations + 1):
+            sess.run(loss, feed_dict={x: X_train, y: Y_train})
+            sess.run(accuracy, feed_dict={x: X_train, y: Y_train})
+            sess.run(loss, feed_dict={x: X_valid, y: Y_valid})
+            sess.run(accuracy, feed_dict={x: X_valid, y: Y_valid})
+
             if (i == 0) or (counter == 100) or (i == iterations-1):
                 print("After {} iterations").format(i)
                 print("Training Cost: {}".format(loss))
                 counter = 0
-        save_path = saver.save(session, save_path)
+            if i < iterations:
+                sess.run(train_op, feed_dict={x: X_train, y: Y_train})
+        save_path = saver.save(sess, save_path)
+        return save_path

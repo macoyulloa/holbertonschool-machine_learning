@@ -13,8 +13,8 @@ train = __import__('6-train').train
 def evaluate(X, Y, save_path):
     """evaluated a saved neural network"""
     saver = tf.train.Saver()
-    with tf.Session() as session:
-        saver.restore(session, save_path)
+    with tf.Session() as sess:
+        saver.restore(sess, save_path)
         session.run([accuracy, loss])
         print("Test Accuracy: ", accuracy)
         print("Test Cost: ", loss)

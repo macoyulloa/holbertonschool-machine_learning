@@ -62,8 +62,8 @@ class DeepNeuralNetwork():
                 b_curr = self.weights['b'+str(l)]
                 A_prev = self.cache['A'+str(l-1)]
                 matrix_mul = (np.matmul(W_curr, A_prev)) + b_curr
-                exp_A_curr = np.exp(matrix_mul)
-                self.cache['A' + str(l)] = exp_A_curr / exp_A_curr.sum()
+                t = np.exp(matrix_mul)
+                self.cache['A'+str(l)] = t/np.sum(t, axis=0, keepdims=True)
             else:
                 W_curr = self.__weights['W'+str(l)]
                 b_curr = self.__weights['b'+str(l)]
