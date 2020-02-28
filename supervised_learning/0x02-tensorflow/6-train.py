@@ -26,9 +26,8 @@ def train(X_train, Y_train, X_valid, Y_valid, layer_sizes,
     train_op = create_train_op(loss, alpha)
     tf.add_to_collection('train_op', train_op)
 
-    print(tf.get_default_graph().get_all_collection_keys())
-    saver = tf.train.Saver()
     init = tf.global_variables_initializer()
+    saver = tf.train.Saver()
 
     with tf.Session() as sess:
         sess.run(init)
