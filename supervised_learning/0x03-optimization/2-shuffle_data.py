@@ -5,6 +5,6 @@ import numpy as np
 
 
 def shuffle_data(X, Y):
-    """shuffles the data points in two matrices"""
+    """permutates the data points in two matrices"""
     shuffle = np.random.permutation(len(X))
     return (X[shuffle], Y[shuffle])
