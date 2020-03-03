@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Optimization tasks"""
 
-import numpy as np
 import tensorflow as tf
 
 
