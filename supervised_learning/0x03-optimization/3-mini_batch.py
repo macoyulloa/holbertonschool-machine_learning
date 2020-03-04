@@ -41,6 +41,7 @@ def train_mini_batch(X_train, Y_train, X_valid, Y_valid,
             print("\tValidation Accuracy: {}".format(accuracy_valid))
 
             if i < epochs:
+                X_shuffle, Y_shuffle = shuffle_data(X_train, Y_train)
                 train_op = sess.run(train_op,
                                     feed_dict={x: X_train, y: Y_train})
         save_path = saver.save(sess, save_path)
