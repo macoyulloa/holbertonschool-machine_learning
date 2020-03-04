@@ -12,8 +12,8 @@ def train_mini_batch(X_train, Y_train, X_valid, Y_valid,
                      save_path="/tmp/model.ckpt"):
     """trains a neural network nodel using mini-bash gradient desc"""
     with tf.Session() as sess:
-        saver = tf.train.import_meta_graph(save_path + ".meta")
-        saver.restore(sess, save_path)
+        saver = tf.train.import_meta_graph(load_path + ".meta")
+        saver.restore(sess, load_path)
 
         x = tf.get_collection("x")[0]
         y = tf.get_collection("y")[0]
@@ -22,8 +22,9 @@ def train_mini_batch(X_train, Y_train, X_valid, Y_valid,
         train_op = tf.get_collection("train_op")[0]
 
         init = tf.global_variables_initializer()
+        saver = tf.train.Saver()
         sess.run(init)
-        for i in(epochs + 1):
+        for i in range(epochs + 1):
             cost_train = sess.run(loss,
                                   feed_dict={x: X_train, y: Y_train})
             accuracy_train = sess.run(accuracy,
@@ -40,4 +41,7 @@ def train_mini_batch(X_train, Y_train, X_valid, Y_valid,
             print("\tValidation Accuracy: {}".format(accuracy_valid))
 
             if i < epochs:
-                train_op = sess.run(train_op, feed_dict={x: X_train, y: Y_train})
+                train_op = sess.run(train_op,
+                                    feed_dict={x: X_train, y: Y_train})
+        save_path = saver.save(sess, save_path)
+    return save_path
