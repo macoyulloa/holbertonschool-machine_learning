@@ -12,7 +12,4 @@ def f1_score(confusion):
     """
     s = sensitivity(confusion)
     p = precision(confusion)
-    f1_score = []
-    for i in range(len(s)):
-        f1_score.append(2 * ((p[i] * s[i])/(p[i] + s[i])))
-    return (f1_score)
+    return (2 * ((p * s)/(p + s)))
