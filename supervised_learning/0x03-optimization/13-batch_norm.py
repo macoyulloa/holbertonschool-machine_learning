@@ -7,7 +7,7 @@ import numpy as np
 def batch_norm(Z, gamma, beta, epsilon):
     """batch normalization"""
     mean = Z.mean(axis=0)
-    var = Z.var(axis=0)
+    var = np.sqrt(Z.var(axis=0))
 
     std = var + epsilon
     Z_centered = Z - mean
