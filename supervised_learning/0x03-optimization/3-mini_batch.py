@@ -45,23 +45,19 @@ def train_mini_batch(X_train, Y_train, X_valid, Y_valid,
 
             if epoch < epochs:
                 X, Y = shuffle_data(X_train, Y_train)
-                for i in range(iterations):
+                for i in range(iterations + 1):
                     if i == iterations - 1:
                         X_batch = X_train[i*batch_size:]
                         Y_batch = Y_train[i*batch_size:]
                     X_batch = X_train[i*batch_size:(i+1)*batch_size]
                     Y_batch = Y_train[i*batch_size:(i+1)*batch_size]
 
-                    sess.run(train_op, feed_dict={x: X_batch, y: Y_batch})
-
-                    if ((i) % 100 == 0) and (i is not 0):
+                    cost = sess.run(loss, feed_dict={x: X_batch, y: Y_batch})
+                    acc = sess.run(accuracy, feed_dict={x: X_batch, y: Y_batch})
+                    if (i % 100 == 0) and (i is not 0):
                         print("\tStep {}:".format(i))
-                        cost = sess.run(loss,
-                                        feed_dict={x: X_batch, y: Y_batch})
                         print("\t\tCost: {}".format(cost))
-                        accur = sess.run(accuracy,
-                                         feed_dict={x: X_batch, y: Y_batch})
-                        print("\t\tAccuracy: {}".format(accur))
-
+                        print("\t\tAccuracy: {}".format(acc))
+                    sess.run(train_op, feed_dict={x: X_batch, y: Y_batch})
         save_path = saver.save(sess, save_path)
     return save_path
