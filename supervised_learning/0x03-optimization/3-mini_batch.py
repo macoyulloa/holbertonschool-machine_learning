@@ -53,7 +53,8 @@ def train_mini_batch(X_train, Y_train, X_valid, Y_valid,
                         Y_batch = Y[i*batch_size:]
 
                     cost = sess.run(loss, feed_dict={x: X_batch, y: Y_batch})
-                    acc = sess.run(accuracy, feed_dict={x: X_batch, y: Y_batch})
+                    acc = sess.run(accuracy,
+                                   feed_dict={x: X_batch, y: Y_batch})
                     if (i % 100 == 0) and (i is not 0):
                         print("\tStep {}:".format(i))
                         print("\t\tCost: {}".format(cost))
