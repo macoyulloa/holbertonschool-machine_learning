@@ -45,12 +45,12 @@ def train_mini_batch(X_train, Y_train, X_valid, Y_valid,
 
             if epoch < epochs:
                 X, Y = shuffle_data(X_train, Y_train)
-                for i in range(iterations + 1):
+                for i in range(iterations):
+                    X_batch = X[i*batch_size:(i+1)*batch_size]
+                    Y_batch = Y[i*batch_size:(i+1)*batch_size]
                     if i == iterations - 1:
-                        X_batch = X_train[i*batch_size:]
-                        Y_batch = Y_train[i*batch_size:]
-                    X_batch = X_train[i*batch_size:(i+1)*batch_size]
-                    Y_batch = Y_train[i*batch_size:(i+1)*batch_size]
+                        X_batch = X[i*batch_size:]
+                        Y_batch = Y[i*batch_size:]
 
                     cost = sess.run(loss, feed_dict={x: X_batch, y: Y_batch})
                     acc = sess.run(accuracy, feed_dict={x: X_batch, y: Y_batch})
