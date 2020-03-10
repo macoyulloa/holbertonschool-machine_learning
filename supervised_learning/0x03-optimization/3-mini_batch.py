@@ -19,7 +19,10 @@ def train_mini_batch(X_train, Y_train, X_valid, Y_valid,
         loss = tf.get_collection("loss")[0]
         train_op = tf.get_collection("train_op")[0]
         m = X_train.shape[0]
-        iterations = int(m / batch_size) + 1
+        if type(m / batch_size) == float:
+            iterations = int(m / batch_size) + 1
+        else:
+            iterations = (m / batch_size)
 
         init = tf.global_variables_initializer()
         saver = tf.train.Saver()
@@ -48,16 +51,17 @@ def train_mini_batch(X_train, Y_train, X_valid, Y_valid,
                         Y_batch = Y_train[i*batch_size:]
                     X_batch = X_train[i*batch_size:(i+1)*batch_size]
                     Y_batch = Y_train[i*batch_size:(i+1)*batch_size]
-                    cost = sess.run(loss, feed_dict={x: X_batch, y: Y_batch})
-                    accur = sess.run(accuracy,
-                                     feed_dict={x: X_batch, y: Y_batch})
-                    if (i % 100 == 0) and (i is not 0):
+
+                    sess.run(train_op, feed_dict={x: X_batch, y: Y_batch})
+
+                    if ((i) % 100 == 0) and (i is not 0):
                         print("\tStep {}:".format(i))
+                        cost = sess.run(loss,
+                                        feed_dict={x: X_batch, y: Y_batch})
                         print("\t\tCost: {}".format(cost))
+                        accur = sess.run(accuracy,
+                                         feed_dict={x: X_batch, y: Y_batch})
                         print("\t\tAccuracy: {}".format(accur))
 
-                    if i < iterations:
-                        train = sess.run(train_op,
-                                         feed_dict={x: X_batch, y: Y_batch})
         save_path = saver.save(sess, save_path)
     return save_path
