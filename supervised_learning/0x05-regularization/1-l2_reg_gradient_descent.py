@@ -10,17 +10,19 @@ def l2_reg_gradient_descent(Y, weights, cache, alpha, lambtha, L):
     w_copy = weights.copy()
     m = Y.shape[1]
 
-    for l in reversed(range(L)):
-        if l == L-1:
-            dz = cache["A"+str(l+1)] - Y
-            dw = (np.matmul(cache["A"+str(l)], dz.T) / m).T
+    for ln in reversed(range(L)):
+        if ln == L-1:
+            dz = cache["A"+str(ln+1)] - Y
+            dw = (np.matmul(cache["A"+str(ln)], dz.T) / m).T
+            dw_regu = dw + (lambtha/m) * w_copy["W"+str(ln+1)]
+            db = np.sum(dz, axis=1, keepdims=True) / m
         else:
-            d1 = np.matmul(w_copy["W"+str(l+2)].T, dzp)
-            d2 = 1-cache["A"+str(l+1)]**2
-            dz = d1 * d2
-            dw = np.matmul(dz, cache["A"+str(l)].T) / m
-        dw_reg = dw + (lambtha/m) * w_copy["W"+str(l+1)]
-        db = np.sum(dz, axis=1, keepdims=True) / m
-        weights["W"+str(l+1)] = (w_copy["W"+str(l+1)] - (alpha * dw_reg))
-        weights["b"+str(l+1)] = w_copy["b"+str(l+1)] - alpha * db
-        dzp = dz
+            dz1 = np.matmul(w_copy["W"+str(ln+2)].T, dz_curr)
+            dz2 = 1-cache["A"+str(ln+1)]**2
+            dz = dz1 * dz2
+            dw = np.matmul(dz, cache["A"+str(ln)].T) / m
+            dw_regu = dw + (lambtha/m) * w_copy["W"+str(ln+1)]
+            db = np.sum(dz, axis=1, keepdims=True) / m
+        weights["W"+str(ln+1)] = (w_copy["W"+str(ln+1)] - (alpha * dw_regu))
+        weights["b"+str(ln+1)] = w_copy["b"+str(ln+1)] - alpha * db
+        dz_curr = dz
