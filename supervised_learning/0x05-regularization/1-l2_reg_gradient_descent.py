@@ -1,12 +1,19 @@
 #!/usr/bin/env python3
-""" Gradient Descent with L2 Regularization """
+""" L2 Regularization """
+
 import numpy as np
 
 
 def l2_reg_gradient_descent(Y, weights, cache, alpha, lambtha, L):
     """ updates the weights and biases of a neural network
-    using gradient descent with L2 regularization
+    Y: is a one-hot (classes, m)
+    lambtha: regularization param
+    weights: dic with w and b
+    cache: dic of outputs of each layer
+    alpha: learning rate
+    L: num of layers
     """
+
     w_copy = weights.copy()
     m = Y.shape[1]
 
