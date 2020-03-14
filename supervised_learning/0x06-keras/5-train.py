@@ -3,8 +3,8 @@
 import tensorflow as tf
 
 
-def train_model(network, data, labels, batch_size,
-                epochs, verbose=True, shuffle=False):
+def train_model(network, data, labels, batch_size, epochs,
+                validation_data=None, verbose=True, shuffle=False):
     """
     Arg:
         network: is the model to optimize
@@ -12,11 +12,13 @@ def train_model(network, data, labels, batch_size,
         labels: one-hot code shape (m, classes)
         batch_size: size of the batch used foor mini-batch
         epochs: number of passes for data
+        validation_data: data to validate the model
         verbose: determines if output should be printed
         shuffle: determines whether to shuffle
     return: History object generated
     """
     history = network.fit(x=data, y=labels, epochs=epochs,
                           batch_size=batch_size,
+                          validation_data=validation_data,
                           verbose=verbose, shuffle=shuffle)
     return history
