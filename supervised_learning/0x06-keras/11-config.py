@@ -8,7 +8,7 @@ def save_config(network, filename):
     network: model to save
     filename: path of the file
     """
-    filename = network.to_json()
+    network.to_json(filename)
     return None
 
 
