@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """building a deep learning model using keras"""
-import tensorflow as tf
-from tensorflow import keras
+import tensorflow.keras as K
 
 
 def build_model(nx, layers, activations, lambtha, keep_prob):
@@ -13,16 +12,16 @@ def build_model(nx, layers, activations, lambtha, keep_prob):
     keep_prob: to keep the node for dropout
     """
 
-    model = tf.keras.Sequential()
-    reg_l2 = tf.keras.regularizers.l2(lambtha)
+    model = K.Sequential()
+    reg_l2 = K.regularizers.l2(lambtha)
     for i in range(len(layers)):
         if i == 0:
-            model.add(keras.layers.Dense(layers[i], input_shape=(nx,),
-                                         activation=activations[i],
-                                         kernel_regularizer=reg_l2))
+            model.add(K.layers.Dense(layers[i], input_shape=(nx,),
+                                     activation=activations[i],
+                                     kernel_regularizer=reg_l2))
         else:
-            model.add(keras.layers.Dropout(keep_prob))
-            model.add(keras.layers.Dense(layers[i],
-                                         activation=activations[i],
-                                         kernel_regularizer=reg_l2))
+            model.add(K.layers.Dropout(keep_prob))
+            model.add(K.layers.Dense(layers[i],
+                                     activation=activations[i],
+                                     kernel_regularizer=reg_l2))
     return model
