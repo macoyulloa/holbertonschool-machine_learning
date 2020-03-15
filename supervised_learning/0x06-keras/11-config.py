@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """building a deep learning model using keras"""
-import tensorflow as tf
+import tensorflow.keras as K
 
 
 def save_config(network, filename):
@@ -16,4 +16,4 @@ def load_config(filename):
     """
     filename: path where the model should be loaded
     """
-    return tf.keras.models.model_from_json(filename)
+    return K.models.model_from_json(filename)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """building a deep learning model using keras"""
-import tensorflow as tf
+import tensorflow.keras as K
 
 
 def one_hot(labels, classes=None):
@@ -8,5 +8,5 @@ def one_hot(labels, classes=None):
     labels: labels
     classes: number of classes
     """
-    encoded = tf.keras.utils.to_categorical(labels)
+    encoded = K.utils.to_categorical(labels)
     return encoded

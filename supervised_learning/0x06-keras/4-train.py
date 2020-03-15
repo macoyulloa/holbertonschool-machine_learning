@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """building a deep learning model using keras"""
-import tensorflow as tf
+import tensorflow.keras as K
 
 
 def train_model(network, data, labels, batch_size,

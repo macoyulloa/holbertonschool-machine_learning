@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """building a deep learning model using keras"""
-import tensorflow as tf
+import tensorflow.keras as K
 
 
 def train_model(network, data, labels, batch_size, epochs,
@@ -25,8 +25,8 @@ def train_model(network, data, labels, batch_size, epochs,
     return: History object generated
     """
     if validation_data:
-        es = tf.keras.callbacks.EarlyStopping(monitor='val_loss',
-                                              patience=patience)
+        es = K.callbacks.EarlyStopping(monitor='val_loss',
+                                       patience=patience)
     else:
         es = None
     history = network.fit(x=data, y=labels, epochs=epochs,

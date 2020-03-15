@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """building a deep learning model using keras"""
-import tensorflow as tf
+import tensorflow.keras as K
 
 
 def optimize_model(network, alpha, beta1, beta2):
@@ -10,9 +10,9 @@ def optimize_model(network, alpha, beta1, beta2):
     beta1: first Adam opti param
     beta2: second Adam opti param
     """
-    adam_op = tf.keras.optimizers.Adam(alpha,
-                                    beta_1=beta1,
-                                    beta_2=beta2)
+    adam_op = K.optimizers.Adam(lr=alpha,
+                                beta_1=beta1,
+                                beta_2=beta2)
     network.compile(optimizer=adam_op,
                     loss='categorical_crossentropy',
                     metrics=['accuracy'])

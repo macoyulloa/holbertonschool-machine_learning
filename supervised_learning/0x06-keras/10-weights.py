@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """building a deep learning model using keras"""
-import tensorflow as tf
-import h5py
+import tensorflow.keras as K
 
 
 def save_weights(network, filename, save_format='h5'):
