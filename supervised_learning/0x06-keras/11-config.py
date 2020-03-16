@@ -8,7 +8,9 @@ def save_config(network, filename):
     network: model to save
     filename: path of the file
     """
-    network.to_json(filename)
+    json_model = network.to_json()
+    with open(filename, 'w') as json_file:
+        json_file.write(json_model)
     return None
 
 
@@ -16,4 +18,6 @@ def load_config(filename):
     """
     filename: path where the model should be loaded
     """
-    return K.models.model_from_json(filename)
+    with open(filename, 'r') as json_file:
+        json_model = K.models.model_from_json(json_file.read())
+    return json_model
