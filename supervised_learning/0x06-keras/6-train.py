@@ -20,17 +20,11 @@ def train_model(network, data, labels, batch_size, epochs,
         shuffle: determines whether to shuffle
     return: History object generated
     """
-    if validation_data is not None:
-        es = K.callbacks.EarlyStopping(monitor='val_loss',
-                                       patience=patience)
-        history = network.fit(x=data, y=labels, epochs=epochs,
-                              batch_size=batch_size,
-                              validation_data=validation_data,
-                              verbose=verbose, shuffle=shuffle,
-                              callbacks=[es])
-    else:
-        history = network.fit(x=data, y=labels, epochs=epochs,
-                              batch_size=batch_size,
-                              validation_data=validation_data,
-                              verbose=verbose, shuffle=shuffle)
+    es = K.callbacks.EarlyStopping(monitor='val_loss',
+                                   patience=patience)
+    history = network.fit(x=data, y=labels, epochs=epochs,
+                          batch_size=batch_size,
+                          validation_data=validation_data,
+                          verbose=verbose, shuffle=shuffle,
+                          callbacks=[es])
     return history
