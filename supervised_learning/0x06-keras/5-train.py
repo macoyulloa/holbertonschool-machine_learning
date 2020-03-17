@@ -17,8 +17,14 @@ def train_model(network, data, labels, batch_size, epochs,
         shuffle: determines whether to shuffle
     return: History object generated
     """
-    history = network.fit(x=data, y=labels, epochs=epochs,
-                          batch_size=batch_size,
-                          validation_data=validation_data,
-                          verbose=verbose, shuffle=shuffle)
+    if validation_data:
+        history = network.fit(x=data, y=labels, epochs=epochs,
+                              batch_size=batch_size,
+                              validation_data=validation_data,
+                              verbose=verbose, shuffle=shuffle)
+    else:
+        history = network.fit(x=data, y=labels, epochs=epochs,
+                              batch_size=batch_size,
+                              validation_data=None,
+                              verbose=verbose, shuffle=shuffle)
     return history
