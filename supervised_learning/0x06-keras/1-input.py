@@ -19,7 +19,7 @@ def build_model(nx, layers, activations, lambtha, keep_prob):
                                     activation=activations[i],
                                     kernel_regularizer=r_l2)(inputs)
         else:
-            dropout = K.layers.Dropout(keep_prob)(output)
+            dropout = K.layers.Dropout(1-keep_prob)(output)
             output = K.layers.Dense(layers[i],
                                     activation=activations[i],
                                     kernel_regularizer=r_l2)(dropout)
