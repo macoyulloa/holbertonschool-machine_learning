@@ -18,13 +18,12 @@ def train_model(network, data, labels, batch_size, epochs,
     return: History object generated
     """
     if validation_data:
-        history = network.fit(x=data, y=labels, epochs=epochs,
-                              batch_size=batch_size,
-                              validation_data=validation_data,
-                              verbose=verbose, shuffle=shuffle)
+        validation_data = validation_data
     else:
-        history = network.fit(x=data, y=labels, epochs=epochs,
-                              batch_size=batch_size,
-                              validation_data=None,
-                              verbose=verbose, shuffle=shuffle)
+        validation_data = None
+
+    history = network.fit(x=data, y=labels, epochs=epochs,
+                          batch_size=batch_size,
+                          validation_data=validation_data,
+                          verbose=verbose, shuffle=shuffle)
     return history
