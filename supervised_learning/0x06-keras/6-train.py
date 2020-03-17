@@ -20,7 +20,7 @@ def train_model(network, data, labels, batch_size, epochs,
         shuffle: determines whether to shuffle
     return: History object generated
     """
-    if validation_data:
+    if validation_data and early_stopping:
         es = K.callbacks.EarlyStopping(monitor='val_loss',
                                        patience=patience)
         history = network.fit(x=data, y=labels, epochs=epochs,
