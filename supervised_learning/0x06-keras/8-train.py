@@ -27,27 +27,28 @@ def train_model(network, data, labels, batch_size, epochs,
         shuffle: determines whether to shuffle
     return: History object generated
     """
+    def lrate(epoch):
+        """getting the learning rate each epoch"""
+        return alpha / (1 + decay_rate * epoch)
+
+    callbacks = []
     if validation_data:
-        es = K.callbacks.EarlyStopping(monitor='val_loss',
-                                       patience=patience)
+        if early_stopping:
+            es = K.callbacks.EarlyStopping(monitor='val_loss',
+                                           patience=patience)
+            callbacks.append(es)
+
+        if learning_rate_decay:
+            lrs = K.callbacks.LearningRateScheduler(lrate, verbose=1)
+            callbacks.append(lrs)
+
         if save_best:
             save = K.callbacks.ModelCheckpoint(filepath)
-            history = network.fit(x=data, y=labels, epochs=epochs,
-                                  batch_size=batch_size,
-                                  validation_data=validation_data,
-                                  verbose=verbose, shuffle=shuffle,
-                                  callbacks=[es, save]])
-        else:
-            history = network.fit(x=data, y=labels, epochs=epochs,
-                                  batch_size=batch_size,
-                                  validation_data=validation_data,
-                                  verbose=verbose, shuffle=shuffle,
-                                  callbacks=[es]])
+            callbacks.append(save)
 
-    else:
         history = network.fit(x=data, y=labels, epochs=epochs,
                               batch_size=batch_size,
                               validation_data=validation_data,
                               verbose=verbose, shuffle=shuffle,
-                              callbacks=None)
+                              callbacks=callbacks)
     return history
