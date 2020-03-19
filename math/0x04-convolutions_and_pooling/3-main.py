@@ -13,7 +13,7 @@ if __name__ == '__main__':
     kernel = np.array([[1 ,0, -1], [1, 0, -1], [1, 0, -1]])
     images_conv = convolve_grayscale(images, kernel, padding='valid', stride=(2, 2))
     print(images_conv.shape)
-    
+
     plt.imshow(images[0], cmap='gray')
     plt.show()
     plt.imshow(images_conv[0], cmap='gray')
