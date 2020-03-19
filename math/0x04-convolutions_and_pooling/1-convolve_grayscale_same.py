@@ -18,18 +18,19 @@ def convolve_grayscale_same(images, kernel):
 
     if (k_h % 2) == 0:
         p_h = int((k_h) / 2)
+        out_h = img_h - k_h + (2*p_h)
     else:
         p_h = int((k_h - 1) / 2)
+        out_h = img_h - k_h + 1 + (2*p_h)
 
     if (k_w % 2) == 0:
         p_w = int((k_w) / 2)
+        out_w = img_w - k_w + (2*p_w)
     else:
         p_w = int((k_w - 1) / 2)
+        out_w = img_w - k_w + 1 + (2*p_w)
 
-    out_h = img_h - k_h + 1 + (2*p_h)
-    out_w = img_w - k_w + 1 + (2*p_w)
     output_conv = np.zeros((m, out_h, out_w))
-
     m_img = np.arange(0, m)
     images = np.pad(images, [(0, 0), (p_h, p_h), (p_w, p_w)],
                     'constant', constant_values=0)
