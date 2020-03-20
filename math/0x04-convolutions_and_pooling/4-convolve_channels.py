@@ -14,14 +14,15 @@ def convolve_channels(images, kernel, padding='same', stride=(1, 1)):
     """
     m, img_h, img_w, img_c = images.shape
     k_h, k_w, k_c = kernel.shape
+    s_h, s_w = stride
 
     if padding == 'valid':
         p_h = 0
         p_w = 0
 
     if padding == 'same':
-        p_h = int((k_h - 1) / 2)
-        p_w = int((k_h - 1) / 2)
+        p_h = int(((s_h*img_h) - s_h + k_h - img_h) / 2) + 1
+        p_w = int(((s_w*img_w) - s_w + k_w - img_w) / 2) + 1
 
     if type(padding) == tuple:
         p_h = padding[0]
