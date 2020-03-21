@@ -43,5 +43,5 @@ def convolve(images, kernels, padding='same', stride=(1, 1)):
                     images[m_img,
                            i*(stride[0]):k_h+(i*(stride[0])),
                            j*(stride[1]):k_w+(j*(stride[1]))],
-                    kernels[:,:,:,f]), axis=(1, 2, 3))
+                    kernels[:, :, :, f]), axis=(1, 2, 3))
     return output_conv
