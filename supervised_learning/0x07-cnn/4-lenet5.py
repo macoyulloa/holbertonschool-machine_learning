@@ -43,13 +43,12 @@ def lenet5(x, y):
     layer_4 = tf.layers.Dense(units=84, activation=activation,
                               kernel_initializer=k_init)(layer_3)
 
-    output_layer = tf.layers.Dense(units=10, activation=activation,
+    output_layer = tf.layers.Dense(units=10,
                                    kernel_initializer=k_init)(layer_4)
 
     y_pred = tf.nn.softmax(output_layer)
 
-    loss = tf.losses.softmax_cross_entropy(
-        y, output_layer, reduction=tf.losses.Reduction.MEAN)
+    loss = tf.losses.softmax_cross_entropy(y, output_layer)
 
     train = tf.train.AdamOptimizer().minimize(loss)
 
