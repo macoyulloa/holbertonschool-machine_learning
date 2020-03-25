@@ -17,14 +17,15 @@ def conv_forward(A_prev, W, b, activation, padding="same", stride=(1, 1)):
     k_h, k_w, c_prev, c_new = W.shape
     s_h, s_w = stride
 
+    print(A_prev.shape)
     if padding == 'valid':
         p_h = 0
         p_w = 0
 
     if padding == 'same':
-        p_h = np.ceil(((s_h*img_h) - s_h + k_h - img_h) / 2)
+        p_h = np.ceil(((s_h*h_prev) - s_h + k_h - h_prev) / 2)
         p_h = int(p_h)
-        p_w = np.ceil(((s_w*img_w) - s_w + k_w - img_w) / 2)
+        p_w = np.ceil(((s_w*w_prev) - s_w + k_w - w_prev) / 2)
         p_w = int(p_w)
 
     A_prev = np.pad(A_prev, [(0, 0), (p_h, p_h), (p_w, p_w), (0, 0)],
