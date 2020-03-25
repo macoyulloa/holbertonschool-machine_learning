@@ -17,7 +17,6 @@ def conv_forward(A_prev, W, b, activation, padding="same", stride=(1, 1)):
     k_h, k_w, c_prev, c_new = W.shape
     s_h, s_w = stride
 
-    print(A_prev.shape)
     if padding == 'valid':
         p_h = 0
         p_w = 0
