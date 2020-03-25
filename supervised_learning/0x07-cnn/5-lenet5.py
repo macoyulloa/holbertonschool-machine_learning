@@ -46,7 +46,7 @@ def lenet5(X):
     layer_4 = K.layers.Dense(84, activation=activation,
                              kernel_initializer=k_init)(layer_3)
 
-    output_layer = K.layers.Dense(10, activation=activation,
+    output_layer = K.layers.Dense(10, activation='softmax',
                                   kernel_initializer=k_init)(layer_4)
 
     model = K.models.Model(X, output_layer)
