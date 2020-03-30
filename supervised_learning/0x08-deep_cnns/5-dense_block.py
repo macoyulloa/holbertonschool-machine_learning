@@ -4,7 +4,7 @@ import tensorflow.keras as K
 
 
 def dense_block(X, nb_filters, growth_rate, layers):
-    """inception block
+    """DenseNet block
     Arg:
        -  X: is the output from the previous layer
        -  nb_filters: int the number of filters in X
