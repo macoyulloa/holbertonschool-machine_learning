@@ -15,20 +15,24 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
     Returns: parcial dev prev layer (dA_prev), kernels (dW), biases (db)
     """
     k_h, k_w, c_prev, c_new = W.shape
+    _, h_new, w_new, c_new = dZ.shape
     m, h_x, w_x, c_prev = A_prev.shape
     s_h, s_w = stride
+    x = A_prev
 
     if padding == 'valid':
         p_h = 0
         p_w = 0
 
     if padding == 'same':
-        p_h = int(((s_h * h_prev) - s_h + k_h - h_prev) / 2) + 1
-        p_w = int(((s_w * w_prev) - s_w + k_w - w_prev) / 2) + 1
+        p_h = np.ceil(((s_h*h_x) - s_h + k_h - h_x) / 2)
+        p_h = int(p_h)
+        p_w = np.ceil(((s_w*w_x) - s_w + k_w - w_x) / 2)
+        p_w = int(p_w)
 
     db = np.sum(dZ, axis=(0, 1, 2), keepdims=True)
 
-    x_padded = np.pad(A_prev, [(0, 0), (p_h, p_h), (p_w, p_w), (0, 0)],
+    x_padded = np.pad(x, [(0, 0), (p_h, p_h), (p_w, p_w), (0, 0)],
                       mode='constant', constant_values=0)
 
     x_padded_bcast = np.expand_dims(x_padded, axis=-1)
@@ -45,11 +49,13 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
                                         :, :],
                                     axis=(0, 1, 2))
 
-    dx = np.zeros_like(x_padded, dtype=float)
-    Z_p_h = k_h - 1
-    Z_p_w = k_w - 1
-    dZ_padded = np.pad(A_prev, [(0, 0), (Z_p_h, Z_p_h),
-                                (Z_p_w, Z_p_w), (0, 0)],
-                       mode='constant', constant_values=0)
+    dx = np.zeros(x_padded.shape)
+    m_i = np.arange(m)
+    for i in range(m):
+        for h in range(h_new):
+            for w in range(w_new):
+                for f in range(c_new):
+                    dx[i, h*s_h:(h*s_h)+k_h,
+                       w*s_w:(w*s_w)+k_w, :] += dZ[i, h, w, f] * W[:, :, :, f]
 
     return dx, dW, db
