@@ -32,7 +32,7 @@ def densenet121(growth_rate=32, compression=1.0):
                                     strides=2,
                                     padding='same')(l1)
 
-    l2, n_filt_2 = dense_block(l_pool1, 64, growth_rate, 6)
+    l2, n_filt_2 = dense_block(l_pool1, 2*growth_rate, growth_rate, 6)
 
     l3, n_filt_3 = transition_layer(l2, n_filt_2, compression)
 
