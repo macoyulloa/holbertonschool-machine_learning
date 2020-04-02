@@ -46,9 +46,9 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
                        h*(stride[0]):(h*(stride[0]))+k_h,
                        w*(stride[1]):(w*(stride[1]))+k_w,
                        :] += dZ[i, h, w, f] * W[:, :, :, f]
-                    dW[:,:,:,f] += x[i,
-                                     h*(stride[0]):(h*(stride[0]))+k_h,
-                                     w*(stride[1]):(w*(stride[1]))+k_w,
-                                     :] * dZ[i,h,w,f]
+                    dW[:, :, :, f] += x[i,
+                                        h*(stride[0]):(h*(stride[0]))+k_h,
+                                        w*(stride[1]):(w*(stride[1]))+k_w,
+                                        :] * dZ[i, h, w, f]
 
     return dx, dW, db
