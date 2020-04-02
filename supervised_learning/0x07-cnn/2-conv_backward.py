@@ -35,27 +35,14 @@ def conv_backward(dZ, A_prev, W, b, padding="same", stride=(1, 1)):
     x_padded = np.pad(x, [(0, 0), (p_h, p_h), (p_w, p_w), (0, 0)],
                       mode='constant', constant_values=0)
 
-    x_padded_bcast = np.expand_dims(x_padded, axis=-1)
-    dZ_bcast = np.expand_dims(dZ, axis=-2)
-
     dW = np.zeros_like(W)
-    for h in range(k_h):
-        for w in range(k_w):
-            dW[h, w, :, :] = np.sum(dZ_bcast *
-                                    x_padded_bcast[
-                                        :,
-                                        h*s_h:h_x-(k_h-1-(h*s_h)),
-                                        w*s_w:w_x-(k_w-1-(w*s_w)),
-                                        :, :],
-                                    axis=(0, 1, 2))
-
     dx = np.zeros(x_padded.shape)
     m_i = np.arange(m)
     for i in range(m):
         for h in range(h_new):
             for w in range(w_new):
                 for f in range(c_new):
-                    dx[i, h*s_h:(h*s_h)+k_h,
-                       w*s_w:(w*s_w)+k_w, :] += dZ[i, h, w, f] * W[:, :, :, f]
+                    dx[i, h:(h)+k_h,w:(w)+k_w, :] += dZ[i, h, w, f] * W[:, :, :, f]
+                    dW[:,:,:,f] += x[i,h:h+k_h, w:w+k_w,:] * dZ[i,h,w,f]
 
     return dx, dW, db
