@@ -14,7 +14,7 @@ def pool_backward(dA, A_prev, kernel_shape, stride=(1, 1), mode='max'):
     Returns: parcial dev prev layer (dA_prev)
     """
     k_h, k_w = kernel_shape
-    _, h_new, w_new, c_new = dA.shape
+    m, h_new, w_new, c_new = dA.shape
     m, h_x, w_x, c_prev = A_prev.shape
     s_h, s_w = stride
 
@@ -25,14 +25,16 @@ def pool_backward(dA, A_prev, kernel_shape, stride=(1, 1), mode='max'):
             for w in range(w_new):
                 for f in range(c_new):
                     if mode == 'max':
+                        tmp = A_prev[i, h*s_h:k_h+(h*s_h), w*s_w:k_w+(w*s_w)]
+                        mask = (tmp == np.max(tmp))
                         dx[i,
-                           h*(stride[0]):(h*(stride[0]))+k_h,
-                           w*(stride[1]):(w*(stride[1]))+k_w,
-                           :] = dA[i, h, w, f]
+                           h*(s_h):(h*(s_h))+k_h,
+                           w*(s_w):(w*(s_w))+k_w,
+                           :] += dA[i, h, w, f] * mask
                     if mode == 'avg':
                         dx[i,
-                           h*(stride[0]):(h*(stride[0]))+k_h,
-                           w*(stride[1]):(w*(stride[1]))+k_w,
-                           :] = dA[i, h, w, f]
+                           h*(s_h):(h*(s_h))+k_h,
+                           w*(s_w):(w*(s_w))+k_w,
+                           :] += dA[i, h, w, f]
 
     return dx
