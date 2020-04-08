@@ -8,8 +8,8 @@ if __name__ == '__main__':
 
     (x_train, y_train), (x_test, y_test) = K.datasets.cifar10.load_data()
 
-    x_train = K.applications.xception.preprocess_input(x_train)
-    x_test = K.applications.xception.preprocess_input(x_test)
+    x_train = K.applications.resnet.preprocess_input(x_train)
+    x_test = K.applications.resnet.preprocess_input(x_test)
 
     y_train = K.utils.to_categorical(y_train, 10)
     y_test = K.utils.to_categorical(y_test, 10)
@@ -37,6 +37,8 @@ if __name__ == '__main__':
     model.compile(optimizer='adam',
                   loss='categorical_crossentropy',
                   metrics=['acc'])
+
+    model.summary()
 
     checkpoint = K.callbacks.ModelCheckpoint('cifar10.h5',
                                              monitor='val_acc',
