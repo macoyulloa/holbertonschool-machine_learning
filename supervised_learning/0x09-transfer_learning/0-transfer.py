@@ -14,18 +14,42 @@ if __name__ == '__main__':
     y_train = K.utils.to_categorical(y_train, 10)
     y_test = K.utils.to_categorical(y_test, 10)
 
-    train_generator = K.preprocessing.image.ImageDataGenerator(
-        rotation_range=2,
-        horizontal_flip=True,
-        zoom_range=.1)
+    #expand the samples with numpy
 
-    test_generator = K.preprocessing.image.ImageDataGenerator(
-        rotation_range=2,
-        horizontal_flip=True,
-        zoom_range=.1)
+    base_model_2 = K.applications.ResNet50(include_top=False,
+                                           weights='imagenet',
+                                           input_shape=(32, 32, 3),
+                                           classes=y_train.shape[1])
 
-    train_generator.fit(x_train)
-    test_generator.fit(x_test)
+    for layer in base_model_2.layers:
+            layer.trainable = False
+    model_1 = K.Sequential()
+    model_1.add(base_model_2)
+    model_1.add(K.layers.Flatten())
+    #model_1.add(K.layers.Dropout(0.2))
+    model_1.add(K.layers.Dense(10, activation=('softmax')))
+
+    model_1.summary()
+
+    batch = 64
+    epochs = 40
+    lrate = .001
+
+    sgd = K.optimizers.SGD(lr=lrate, momentum=0.9, nesterov=False)
+    adam = K.optimizers.Adam(lr=lrate,
+                             beta_1=0.9,
+                             beta_2=0.999)
+
+    model_1.compile(optimizer=adam,
+                    loss='categorical_crossentropy',
+                    metrics=['accuracy'])
+
+    save = K.callbacks.ModelCheckpoint('cifar10.h5',
+                                       monitor='val_acc',
+                                       save_best_only=True)
+
+    es = K.callbacks.EarlyStopping(monitor='val_loss',
+                                   patience=3)
 
     lrr = K.callbacks.ReduceLROnPlateau(
         monitor='val_acc',
@@ -33,39 +57,13 @@ if __name__ == '__main__':
         patience=3,
         min_lr=1e-5)
 
-    base_model_2 = K.applications.ResNet50(include_top=False,
-                                           weights='imagenet',
-                                           input_shape=(32, 32, 3),
-                                           classes=y_train.shape[1])
-
-    model_1 = K.Sequential()
-    model_1.add(base_model_2)
-    model_1.add(K.layers.Flatten())
-    model_1.add(K.layers.Dense(10, activation=('softmax')))
-
-    model_1.summary()
-
-    batch = 100
-    epochs = 1
-    learn_rate = .001
-
-    sgd = K.optimizers.SGD(lr=learn_rate, momentum=.9, nesterov=False)
-    adam = K.optimizers.Adam(lr=learn_rate, beta_1=0.9,
-                             beta_2=0.999, epsilon=None,
-                             decay=0.0, amsgrad=False)
-
-    model_1.compile(optimizer=sgd,
-                    loss='categorical_crossentropy',
-                    metrics=['accuracy'])
-
-    history = model_1.fit_generator(train_generator.flow(x_train,
-                                                         y_train,
-                                                         batch_size=batch),
-                                    epochs=epochs,
-                                    steps_per_epoch=x_train.shape[0]//batch,
-                                    callbacks=[lrr],
-                                    verbose=1,
-                                    validation_data=(x_test, y_test))
+    history = model_1.fit(x_train,
+                          y_train,
+                          epochs=epochs,
+                          batch_size=batch,
+                          verbose=1,
+                          callbacks=[lrr, save, es],
+                          validation_data=(x_test, y_test))
 
     model_1.save('cifar10.h5')
 
