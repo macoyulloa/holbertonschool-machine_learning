@@ -17,16 +17,15 @@ if __name__ == '__main__':
     y_test = K.utils.to_categorical(y_test, 10)
 
     expand_x_train = np.fliplr(x_train)
-    expand_y_train = np.fliplr(y_train)
     #expand the samples with numpy
     print(expand_x_train.shape)
-    print(expand_y_train.shape)
+
     plt.imshow(expand_x_train[0,:,:,0])
     plt.show()
     plt.imshow(x_train[0,:,:,0])
     plt.show()
     x_train = np.concatenate([x_train, expand_x_train])
-    y_train = np.concatenate([y_train, expand_y_train])
+    y_train = np.concatenate([y_train, y_train])
     print(x_train.shape)
     print(y_train.shape)
 
