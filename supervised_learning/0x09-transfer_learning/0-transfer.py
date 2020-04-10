@@ -3,7 +3,6 @@
 
 import tensorflow.keras as K
 import numpy as np
-import matplotlib.pyplot as plt
 
 
 if __name__ == '__main__':
@@ -20,26 +19,22 @@ if __name__ == '__main__':
     #expand the samples with numpy
     print(expand_x_train.shape)
 
-    plt.imshow(expand_x_train[0,:,:,0])
-    plt.show()
-    plt.imshow(x_train[0,:,:,0])
-    plt.show()
     x_train = np.concatenate([x_train, expand_x_train])
     y_train = np.concatenate([y_train, y_train])
     print(x_train.shape)
     print(y_train.shape)
 
-    base_model_2 = K.applications.ResNet50(include_top=False,
-                                           weights='imagenet',
-                                           input_shape=(32, 32, 3),
-                                           classes=y_train.shape[1])
+    base_model = K.applications.ResNet50(include_top=False,
+                                         weights='imagenet',
+                                         input_shape=(32, 32, 3),
+                                         classes=y_train.shape[1])
 
-    for layer in base_model_2.layers:
+    for layer in base_model.layers:
         layer.trainable = False
     #freeze the layers of the model trained
 
     model_1 = K.Sequential()
-    model_1.add(base_model_2)
+    model_1.add(base_model)
     model_1.add(K.layers.Flatten())
     model_1.add(K.layers.Dense(10, activation=('softmax')))
 
