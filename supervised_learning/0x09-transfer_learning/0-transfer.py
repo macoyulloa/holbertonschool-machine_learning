@@ -2,6 +2,8 @@
 """Transfer learning"""
 
 import tensorflow.keras as K
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 if __name__ == '__main__':
@@ -14,7 +16,19 @@ if __name__ == '__main__':
     y_train = K.utils.to_categorical(y_train, 10)
     y_test = K.utils.to_categorical(y_test, 10)
 
+    expand_x_train = np.fliplr(x_train)
+    expand_y_train = np.fliplr(y_train)
     #expand the samples with numpy
+    print(expand_x_train.shape)
+    print(expand_y_train.shape)
+    plt.imshow(expand_x_train[0,:,:,0])
+    plt.show()
+    plt.imshow(x_train[0,:,:,0])
+    plt.show()
+    x_train = np.concatenate([x_train, expand_x_train])
+    y_train = np.concatenate([y_train, expand_y_train])
+    print(x_train.shape)
+    print(y_train.shape)
 
     base_model_2 = K.applications.ResNet50(include_top=False,
                                            weights='imagenet',
@@ -22,11 +36,12 @@ if __name__ == '__main__':
                                            classes=y_train.shape[1])
 
     for layer in base_model_2.layers:
-            layer.trainable = False
+        layer.trainable = False
+    #freeze the layers of the model trained
+
     model_1 = K.Sequential()
     model_1.add(base_model_2)
     model_1.add(K.layers.Flatten())
-    #model_1.add(K.layers.Dropout(0.2))
     model_1.add(K.layers.Dense(10, activation=('softmax')))
 
     model_1.summary()
