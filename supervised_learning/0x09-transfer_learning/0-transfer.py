@@ -58,14 +58,14 @@ if __name__ == '__main__':
                     metrics=['accuracy'])
 
     save = K.callbacks.ModelCheckpoint('cifar10.h5',
-                                       monitor='val_acc',
+                                       monitor='val_accuracy',
                                        save_best_only=True)
 
-    es = K.callbacks.EarlyStopping(monitor='val_loss',
+    es = K.callbacks.EarlyStopping(monitor='val_accuracy',
                                    patience=3)
 
     lrr = K.callbacks.ReduceLROnPlateau(
-        monitor='val_acc',
+        monitor='val_accuracy',
         factor=.01,
         patience=3,
         min_lr=1e-5)
