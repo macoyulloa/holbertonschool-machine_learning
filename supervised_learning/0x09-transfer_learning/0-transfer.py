@@ -7,12 +7,13 @@ import numpy as np
 
 if __name__ == '__main__':
 
+    """ transfer learning of the model densenet121
+        and save it in a file cifar10.h5
+    """
     (x_train, y_train), (x_test, y_test) = K.datasets.cifar10.load_data()
-
-    x_train = K.applications.vgg19.preprocess_input(x_train)
-    x_test = K.applications.vgg19.preprocess_input(x_test)
-
+    x_train = K.applications.densenet.preprocess_input(x_train)
     y_train = K.utils.to_categorical(y_train, 10)
+    x_test = K.applications.densenet.preprocess_input(x_test)
     y_test = K.utils.to_categorical(y_test, 10)
 
     expand_x_train = np.fliplr(x_train)
@@ -23,62 +24,48 @@ if __name__ == '__main__':
     print(x_train.shape)
     print(y_train.shape)
 
-    base_model = K.applications.vgg19.VGG19(include_top=False,
-                                            weights='imagenet',
-                                            input_shape=(32, 32, 3),
-                                            classes=y_train.shape[1])
+    base_model = K.applications.densenet.DenseNet121(
+        include_top=False,
+        pooling='max',
+        input_shape=(32, 32, 3),
+        weights='imagenet')
 
     base_model.summary()
 
-    for layer in base_model.layers[:20]:
-        layer.trainable = False
+    x = base_model.layers[-1].output
+    x = K.layers.Dense(128, activation='relu')(x)
+    x = K.layers.Dropout(0.3)(x)
+    x = K.layers.Dense(10, activation='softmax')(x)
+    model = K.models.Model(inputs=base_model.inputs, outputs=x)
 
-    for i, layer in enumerate(base_model.layers):
-        print(i, layer.name, "-", layer.trainable)
-
-    model_1 = K.Sequential()
-    model_1.add(base_model)
-    model_1.add(K.layers.Flatten())
-    model_1.add(K.layers.Dense(512, activation=('relu')))
-    model_1.add(K.layers.Dense(10, activation=('softmax')))
-
-    model_1.summary()
-
-    batch = 64
-    epochs = 40
-    lrate = .001
-
-    sgd = K.optimizers.SGD(lr=lrate, momentum=0.9, nesterov=False)
-    adam = K.optimizers.Adam(lr=lrate,
-                             beta_1=0.9,
-                             beta_2=0.999)
-
-    model_1.compile(optimizer=sgd,
-                    loss='categorical_crossentropy',
-                    metrics=['accuracy'])
+    es = K.callbacks.EarlyStopping(monitor='val_acc',
+                                   mode='max',
+                                   patience=5)
 
     save = K.callbacks.ModelCheckpoint('cifar10.h5',
-                                       monitor='val_accuracy',
+                                       monitor='val_acc',
+                                       mode='max',
                                        save_best_only=True)
 
-    es = K.callbacks.EarlyStopping(monitor='val_accuracy',
-                                   patience=3)
-
     lrr = K.callbacks.ReduceLROnPlateau(
-        monitor='val_accuracy',
+        monitor='val_acc',
         factor=.01,
         patience=3,
-        min_lr=1e-5)
+        min_lr=1e-5
+    )
 
-    history = model_1.fit(x_train,
-                          y_train,
-                          epochs=epochs,
-                          batch_size=batch,
-                          verbose=1,
-                          callbacks=[lrr, save, es],
-                          validation_data=(x_test, y_test))
+    model.compile(optimizer='adam',
+                  loss='categorical_crossentropy',
+                  metrics=['acc'])
 
-    model_1.save('cifar10.h5')
+    history = model.fit(x_train, y_train,
+                        validation_data=(x_test, y_test),
+                        batch_size=128,
+                        callbacks=[es, save, lrr],
+                        epochs=30,
+                        verbose=1)
+
+    model.save('cifar10.h5')
 
 
 def preprocess_data(X, Y):
@@ -92,6 +79,6 @@ def preprocess_data(X, Y):
         Y_p is a numpy.ndarray preprocessed Y
     Notes: m is the number of data points
     """
-    X = K.applications.vgg19.preprocess_input(X)
+    X = K.applications.densenet.preprocess_input(X)
     Y = K.utils.to_categorical(Y, 10)
     return X, Y
