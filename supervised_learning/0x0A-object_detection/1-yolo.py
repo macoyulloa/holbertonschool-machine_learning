@@ -35,7 +35,6 @@ class Yolo():
         self.nms_t = nms_t
         self.anchors = anchors
 
-
     def process_outputs(self, outputs, image_size):
         """ process the outputs
         Arg:
@@ -65,34 +64,36 @@ class Yolo():
         for i in range(len(outputs)):
             grid_h, grid_w, nb_box, coor_pc_classes = outputs[i].shape
 
-            box_conf = 1 / (1 + np.exp(-(outputs[i][:,:,:,4:5])))
+            box_conf = 1 / (1 + np.exp(-(outputs[i][:, :, :, 4:5])))
             box_confidence.append(box_conf)
-            box_prob = 1 / (1 + np.exp(-(outputs[i][:,:,:,5:])))
+            box_prob = 1 / (1 + np.exp(-(outputs[i][:, :, :, 5:])))
             box_class_probs.append(box_prob)
 
-            box_xy = 1 / (1 + np.exp(-(outputs[i][:,:,:,:2])))
-            box_wh = np.exp(outputs[i][:,:,:,2:4])
+            box_xy = 1 / (1 + np.exp(-(outputs[i][:, :, :, :2])))
+            box_wh = np.exp(outputs[i][:, :, :, 2:4])
             anchors_tensor = self.anchors.reshape(1, 1,
                                                   self.anchors.shape[0],
                                                   nb_box, 2)
-            box_wh = box_wh * anchors_tensor[:,:,i,:,:]
+            box_wh = box_wh * anchors_tensor[:, :, i, :, :]
 
             col = np.tile(np.arange(0, grid_w), grid_w).reshape(-1, grid_w)
-            #print(col.shape)
             row = np.tile(np.arange(0, grid_h).reshape(-1, 1), grid_h)
-            #print(row.shape)
             col = col.reshape(grid_h, grid_w, 1, 1).repeat(3, axis=-2)
-            #print(col.shape)
             row = row.reshape(grid_h, grid_w, 1, 1).repeat(3, axis=-2)
-            #print(row.shape)
             grid = np.concatenate((col, row), axis=-1)
-            #print(grid.shape)
 
             box_xy += grid
             box_xy /= (grid_w, grid_h)
-            box_wh /= (img_w, img_h)
+            box_wh /= (416, 416)
             box_xy -= (box_wh / 2.)
-            box = np.concatenate((box_xy, box_wh), axis=-1)
+            box_xy1 = box_xy
+            box_xy2 = box_xy1 + box_wh
+            box = np.concatenate((box_xy1, box_xy2), axis=-1)
+
+            box[..., 0] = (box[..., 0] * image_size[1])
+            box[..., 2] = (box[..., 2] * image_size[1])
+            box[..., 1] = (box[..., 1] * image_size[0])
+            box[..., 3] = (box[..., 3] * image_size[0])
 
             boxes.append(box)
 
