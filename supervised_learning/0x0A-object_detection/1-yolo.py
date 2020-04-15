@@ -72,14 +72,31 @@ class Yolo():
 
             box_xy = 1 / (1 + np.exp(-(outputs[i][:,:,:,:2])))
             box_wh = np.exp(outputs[i][:,:,:,2:4])
-            print(box_wh.shape)
-            print(self.anchors.shape)
-            anchors_tensor = self.anchors.reshape(1, 1, self.anchors.shape[0], self.anchors.shape[1], 2)
-            print(anchors_tensor.shape)
-            for m in range(anchors_tensor.shape[2]):
-                box_wh = box_wh * anchors_tensor[:,:,m,:,:]
+            anchors_tensor = self.anchors.reshape(1, 1,
+                                                  self.anchors.shape[0],
+                                                  nb_box, 2)
+            #for m in range(anchors_tensor.shape[2]):
+            #box_wh = box_wh * anchors_tensor[:,:,m,:,:]
+            box_wh = box_wh * anchors_tensor[:,:,i,:,:]
 
-            box = outputs[i][:,:,:,:4]
+            col = np.tile(np.arange(0, grid_w), grid_w).reshape(-1, grid_w)
+            print(col.shape)
+            row = np.tile(np.arange(0, grid_h).reshape(-1, 1), grid_h)
+            print(row.shape)
+            col = col.reshape(grid_h, grid_w, 1, 1).repeat(3, axis=-2)
+            print(col.shape)
+            row = row.reshape(grid_h, grid_w, 1, 1).repeat(3, axis=-2)
+            print(row.shape)
+            grid = np.concatenate((col, row), axis=-1)
+            print(grid.shape)
+
+            #box_xy += grid
+            box_xy /= (grid_w, grid_h)
+            box_wh /= (img_w, img_h)
+            #box_xy -= (box_wh / 2.)
+            box = np.concatenate((box_xy, box_wh), axis=-1)
+
+            #box = outputs[i][:,:,:,:4]
             boxes.append(box)
 
         return ((boxes, box_confidence, box_class_probs))
