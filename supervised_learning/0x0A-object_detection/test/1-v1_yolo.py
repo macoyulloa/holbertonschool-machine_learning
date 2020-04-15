@@ -77,23 +77,52 @@ class Yolo():
                                                   nb_box, 2)
             box_wh = box_wh * anchors_tensor[:,:,i,:,:]
 
-            col = np.tile(np.arange(0, grid_w), grid_w).reshape(-1, grid_w)
+            for j in range(grid_h*grid_w):
+                row = j / grid_w
+                col = j % grid_w
+
+                x = box_xy[...,0]
+                y = box_xy[...,1]
+                w = box_wh[...,0]
+                h = box_wh[...,1]
+                x = (col + x) / grid_w
+                y = (row + y) / grid_h
+                w = w / img_w
+                h = h / img_h
+            x = (x-w/2)
+            y = (y-h/2)
+            w = (x+w/2)
+            h = (y-h/2)
+            print(x.shape)
+            print(y.shape)
+            print(w.shape)
+            print(h.shape)
+            box = x.reshape(grid_h, grid_w, 3, 1)
+            box = np.concatenate((x, y, w, h), axis=-1)
+
+            #for m in range(anchors_tensor.shape[2]):
+            #box_wh = box_wh * anchors_tensor[:,:,m,:,:]
+
+            #print(grid_w)
+            #print(grid_h)
+            #col = np.tile(np.arange(0, grid_w), grid_w).reshape(-1, grid_w)
             #print(col.shape)
-            row = np.tile(np.arange(0, grid_h).reshape(-1, 1), grid_h)
+            #row = np.tile(np.arange(0, grid_h).reshape(-1, 1), grid_h)
             #print(row.shape)
-            col = col.reshape(grid_h, grid_w, 1, 1).repeat(3, axis=-2)
+            #col = col.reshape(grid_h, grid_w, 1, 1).repeat(3, axis=-2)
             #print(col.shape)
-            row = row.reshape(grid_h, grid_w, 1, 1).repeat(3, axis=-2)
+            #row = row.reshape(grid_h, grid_w, 1, 1).repeat(3, axis=-2)
             #print(row.shape)
-            grid = np.concatenate((col, row), axis=-1)
+            #grid = np.concatenate((col, row), axis=-1)
             #print(grid.shape)
 
-            box_xy += grid
-            box_xy /= (grid_w, grid_h)
-            box_wh /= (img_w, img_h)
-            box_xy -= (box_wh / 2.)
-            box = np.concatenate((box_xy, box_wh), axis=-1)
+            #box_xy += grid
+            #box_xy /= (grid_w, grid_h)
+            #box_wh /= (img_w, img_h)
+            #box_xy -= (box_wh / 2.)
+            #box = np.concatenate((box_xy, box_wh), axis=-1)
 
+            #box = outputs[i][:,:,:,:4]
             boxes.append(box)
 
         return ((boxes, box_confidence, box_class_probs))
