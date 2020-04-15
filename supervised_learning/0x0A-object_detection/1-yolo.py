@@ -59,41 +59,47 @@ class Yolo():
         box_class_probs = []
 
         for i in range(len(outputs)):
-            grid_h, grid_w, nb_box, _ = outputs[i].shape
-
             box_conf = 1 / (1 + np.exp(-(outputs[i][:, :, :, 4:5])))
             box_confidence.append(box_conf)
             box_prob = 1 / (1 + np.exp(-(outputs[i][:, :, :, 5:])))
             box_class_probs.append(box_prob)
 
-            box_xy = 1 / (1 + np.exp(-(outputs[i][:, :, :, :2])))
-            box_wh = np.exp(outputs[i][:, :, :, 2:4])
-            anchors_tensor = self.anchors.reshape(1, 1,
-                                                  self.anchors.shape[0],
-                                                  nb_box, 2)
-            box_wh = box_wh * anchors_tensor[:, :, i, :, :]
+        boxes = [out[..., :4] for out in outputs]
+        for i, box in enumerate(boxes):
+            grid_h, grid_w, n_anchors, _ = box.shape
 
-            col = np.tile(np.arange(0, grid_w), grid_w).reshape(-1, grid_w)
-            row = np.tile(np.arange(0, grid_h).reshape(-1, 1), grid_h)
-            col = col.reshape(grid_h, grid_w, 1, 1).repeat(3, axis=-2)
-            row = row.reshape(grid_h, grid_w, 1, 1).repeat(3, axis=-2)
-            grid = np.concatenate((col, row), axis=-1)
+            m_h = np.arange(grid_h).reshape(1, grid_h)
+            m_h = np.repeat(m_h, grid_w, axis=0).T
+            m_h = np.repeat(m_h[:, :, np.newaxis], n_anchors, axis=2)
+            m_w = np.arange(grid_w).reshape(1, grid_w)
+            m_w = np.repeat(m_w, grid_h, axis=0)
+            m_w = np.repeat(m_w[:, :, np.newaxis], n_anchors, axis=2)
 
-            box_xy += grid
-            box_xy /= (grid_w, grid_h)
-            input_h = self.model.input.shape[1].value
-            input_w = self.model.input.shape[2].value
-            box_wh /= (input_w, input_h)
-            box_xy -= (box_wh / 2)
-            box_xy1 = box_xy
-            box_xy2 = box_xy1 + box_wh
-            box = np.concatenate((box_xy1, box_xy2), axis=-1)
+            box[..., :2] = 1 / (1 + np.exp(-(outputs[i][:, :, :, :2])))
+            box[..., 0] += m_w
+            box[..., 1] += m_h
+
+            box[..., 2:] = np.exp(box[..., 2:])
+            anchor_w = self.anchors[i, :, 0]
+            anchor_h = self.anchors[i, :, 1]
+            box[..., 2] *= anchor_w
+            box[..., 3] *= anchor_h
+
+            box[..., 0] /= grid_w
+            box[..., 1] /= grid_h
+
+            box[..., 2] /= self.model.input.shape[1].value
+            box[..., 3] /= self.model.input.shape[2].value
+
+            box[..., 0] -= box[..., 2] / 2
+            box[..., 1] -= box[..., 3] / 2
+
+            box[..., 2] += box[..., 0]
+            box[..., 3] += box[..., 1]
 
             box[..., 0] *= image_size[1]
             box[..., 2] *= image_size[1]
             box[..., 1] *= image_size[0]
             box[..., 3] *= image_size[0]
-
-            boxes.append(box)
 
         return ((boxes, box_confidence, box_class_probs))
