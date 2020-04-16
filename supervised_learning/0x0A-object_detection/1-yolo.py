@@ -73,11 +73,17 @@ class Yolo():
                                                   nb_box, 2)
             box_wh = box_wh * anchors_tensor[:, :, i, :, :]
 
-            col = np.tile(np.arange(0, grid_w), grid_w).reshape(-1, grid_w)
-            row = np.tile(np.arange(0, grid_h).reshape(-1, 1), grid_h)
-            col = col.reshape(grid_h, grid_w, 1, 1).repeat(3, axis=-2)
-            row = row.reshape(grid_h, grid_w, 1, 1).repeat(3, axis=-2)
-            grid = np.concatenate((col, row), axis=-1)
+            col = np.arange(grid_h).reshape(1, grid_h)
+            col = np.repeat(col, grid_w, axis=0).T
+            col = np.repeat(col[:, :, np.newaxis], nb_box, axis=2)
+            col = np.expand_dims(col, axis=-1)
+
+            row = np.arange(grid_w).reshape(1, grid_w)
+            row = np.repeat(row, grid_h, axis=0)
+            row = np.repeat(row[:, :, np.newaxis], nb_box, axis=2)
+            row = np.expand_dims(row, axis=-1)
+
+            grid = np.concatenate((row, col), axis=-1)
 
             box_xy += grid
             box_xy /= (grid_w, grid_h)
