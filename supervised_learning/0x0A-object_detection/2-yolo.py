@@ -120,26 +120,25 @@ class Yolo():
             box_scores: np array of shape (?) the box scores for each box
                         in filtered_boxes
         """
-        for i in range(len(boxes)):
+        box_score = []
+        for confis, probs in zip(box_confidences, box_class_probs):
+            score = confis * probs
+            box_score.append(score)
 
-            box_score = box_confidences[i] * box_class_probs[i]
-            box_class = np.argmax(box_score, axis=-1)
-            box_class_score = np.max(box_score, axis=-1)
-            filt = np.where(box_class_score >= self.class_t)
+        box_class_scores = [score.max(axis=-1) for score in box_score]
+        box_score_list = [box.reshape(-1) for box in box_class_scores]
+        box_scores_conca = np.concatenate(box_score_list, axis=-1)
 
-            filtered_boxes = boxes[i][filt]
-            print(filtered_boxes.shape)
-            #box = boxes[0][filt]
-            #filtered_boxes.append(box)
+        filt = np.where(box_scores_conca >= self.class_t)
 
-            box_scores = box_class_score[filt]
-            print(box_scores.shape)
-            #box_score = box_class_score[filt]
-            #box_scores.append(box_score)
+        box_scores = box_scores_conca[filt]
+        filtered_boxes = []
+        #filtered_boxes = [box[filt] for box in boxes]
+        #print(filtered_boxes.shape)
 
-            box_classes = box_class[filt]
-            print(box_classes.shape)
-            #classes = box_class[filt]
-            #box_classes.append(classes)
+        box_class = [score.argmax(axis=-1) for score in box_score]
+        box_class_list = [box.reshape(-1) for box in box_class]
+        box_class_conca = np.concatenate(box_class_list, axis=-1)
+        box_classes = box_class_conca[filt]
 
         return (filtered_boxes, box_classes, box_scores)
