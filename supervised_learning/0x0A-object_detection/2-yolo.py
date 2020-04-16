@@ -24,12 +24,11 @@ class Yolo():
                      2 => [anchor_box_width, anchor_box_height]
         """
         class_names = []
-        model = K.models.load_model(model_path)
+        self.model = K.models.load_model(model_path)
         with open(classes_path, "r") as classes_file:
             class_names = classes_file.readlines()
         class_names = [x.strip() for x in class_names]
 
-        self.model = model
         self.class_names = class_names
         self.class_t = class_t
         self.nms_t = nms_t
@@ -60,42 +59,48 @@ class Yolo():
         box_class_probs = []
 
         for i in range(len(outputs)):
-            grid_h, grid_w, nb_box, _ = outputs[i].shape
-
             box_conf = 1 / (1 + np.exp(-(outputs[i][:, :, :, 4:5])))
             box_confidence.append(box_conf)
             box_prob = 1 / (1 + np.exp(-(outputs[i][:, :, :, 5:])))
             box_class_probs.append(box_prob)
 
-            box_xy = 1 / (1 + np.exp(-(outputs[i][:, :, :, :2])))
-            box_wh = np.exp(outputs[i][:, :, :, 2:4])
-            anchors_tensor = self.anchors.reshape(1, 1,
-                                                  self.anchors.shape[0],
-                                                  nb_box, 2)
-            box_wh = box_wh * anchors_tensor[:, :, i, :, :]
+        boxes = [out[..., :4] for out in outputs]
+        for i, box in enumerate(boxes):
+            grid_h, grid_w, n_anchors, _ = box.shape
 
-            col = np.tile(np.arange(0, grid_w), grid_w).reshape(-1, grid_w)
-            row = np.tile(np.arange(0, grid_h).reshape(-1, 1), grid_h)
-            col = col.reshape(grid_h, grid_w, 1, 1).repeat(3, axis=-2)
-            row = row.reshape(grid_h, grid_w, 1, 1).repeat(3, axis=-2)
-            grid = np.concatenate((col, row), axis=-1)
+            m_h = np.arange(grid_h).reshape(1, grid_h)
+            m_h = np.repeat(m_h, grid_w, axis=0).T
+            m_h = np.repeat(m_h[:, :, np.newaxis], n_anchors, axis=2)
+            m_w = np.arange(grid_w).reshape(1, grid_w)
+            m_w = np.repeat(m_w, grid_h, axis=0)
+            m_w = np.repeat(m_w[:, :, np.newaxis], n_anchors, axis=2)
 
-            box_xy += grid
-            box_xy /= (grid_w, grid_h)
-            input_h = self.model.input.shape[1].value
-            input_w = self.model.input.shape[2].value
-            box_wh /= (input_w, input_h)
-            box_xy -= (box_wh / 2)
-            box_xy1 = box_xy
-            box_xy2 = box_xy1 + box_wh
-            box = np.concatenate((box_xy1, box_xy2), axis=-1)
+            box[..., :2] = 1 / (1 + np.exp(-(outputs[i][:, :, :, :2])))
+            box[..., 0] += m_w
+            box[..., 1] += m_h
 
-            box[..., 0] = (box[..., 0] * image_size[1])
-            box[..., 2] = (box[..., 2] * image_size[1])
-            box[..., 1] = (box[..., 1] * image_size[0])
-            box[..., 3] = (box[..., 3] * image_size[0])
+            box[..., 2:] = np.exp(box[..., 2:])
+            anchor_w = self.anchors[i, :, 0]
+            anchor_h = self.anchors[i, :, 1]
+            box[..., 2] *= anchor_w
+            box[..., 3] *= anchor_h
 
-            boxes.append(box)
+            box[..., 0] /= grid_w
+            box[..., 1] /= grid_h
+
+            box[..., 2] /= self.model.input.shape[1].value
+            box[..., 3] /= self.model.input.shape[2].value
+
+            box[..., 0] -= box[..., 2] / 2
+            box[..., 1] -= box[..., 3] / 2
+
+            box[..., 2] += box[..., 0]
+            box[..., 3] += box[..., 1]
+
+            box[..., 0] *= image_size[1]
+            box[..., 2] *= image_size[1]
+            box[..., 1] *= image_size[0]
+            box[..., 3] *= image_size[0]
 
         return ((boxes, box_confidence, box_class_probs))
 
@@ -115,23 +120,26 @@ class Yolo():
             box_scores: np array of shape (?) the box scores for each box
                         in filtered_boxes
         """
-        filtered_boxes = []
-        box_classes = []
-        box_scores = []
-
         for i in range(len(boxes)):
+
             box_score = box_confidences[i] * box_class_probs[i]
-            box_class_score = np.max(box_score, axis=-1)
             box_class = np.argmax(box_score, axis=-1)
+            box_class_score = np.max(box_score, axis=-1)
             filt = np.where(box_class_score >= self.class_t)
 
-            box = boxes[i][filt]
-            filtered_boxes.append(box)
+            filtered_boxes = boxes[i][filt]
+            print(filtered_boxes.shape)
+            #box = boxes[0][filt]
+            #filtered_boxes.append(box)
 
-            box_score = box_class_score[filt]
-            box_scores.append(box_score)
+            box_scores = box_class_score[filt]
+            print(box_scores.shape)
+            #box_score = box_class_score[filt]
+            #box_scores.append(box_score)
 
-            classes = box_class[filt]
-            box_classes.append(classes)
+            box_classes = box_class[filt]
+            print(box_classes.shape)
+            #classes = box_class[filt]
+            #box_classes.append(classes)
 
         return (filtered_boxes, box_classes, box_scores)
