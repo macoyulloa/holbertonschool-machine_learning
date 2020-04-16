@@ -132,9 +132,10 @@ class Yolo():
         filt = np.where(box_scores_conca >= self.class_t)
 
         box_scores = box_scores_conca[filt]
-        filtered_boxes = []
-        #filtered_boxes = [box[filt] for box in boxes]
-        #print(filtered_boxes.shape)
+
+        boxes = [box.reshape(-1, 4) for box in boxes]
+        boxes_conca = np.concatenate(boxes, axis=0)
+        filtered_boxes = boxes_conca[filt]
 
         box_class = [score.argmax(axis=-1) for score in box_score]
         box_class_list = [box.reshape(-1) for box in box_class]
