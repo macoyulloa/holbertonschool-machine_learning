@@ -77,7 +77,7 @@ class Yolo():
             row = np.tile(np.arange(0, grid_h).reshape(-1, 1), grid_h)
             col = col.reshape(grid_h, grid_w, 1, 1).repeat(3, axis=-2)
             row = row.reshape(grid_h, grid_w, 1, 1).repeat(3, axis=-2)
-            grid = np.concatenate((row, col), axis=-1)
+            grid = np.concatenate((col, row), axis=-1)
 
             box_xy += grid
             box_xy /= (grid_w, grid_h)
