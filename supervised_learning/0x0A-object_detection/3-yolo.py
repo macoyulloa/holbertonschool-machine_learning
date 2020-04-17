@@ -140,27 +140,7 @@ class Yolo():
 
         return (filtered_boxes, box_classes, box_scores)
 
-    def non_max_suppression(self, filtered_boxes, box_classes, box_scores):
-        """ Non-max suppression to take the best box option for obj detection
-        Arg:
-            filtered_boxes: np shape (?, 4) containing all of the
-                            filtered bounding boxes.
-            box_classes: np shape (?,) containing the class number
-                         that the filtered_boxes predicts
-            box_scores: np shape (?) box scores for each box in filtered_boxes
-
-        Returns:(box_predic, predic_box_classes, predic_box_scores)
-            box_predictions: np shape (?, 4) all of the predicted
-                             bounding boxes ordered by class and box score
-            predicted_box_classes: np shape (?,) with class number for
-                                   box_predictions
-            predicted_box_scores: np shape (?) with the box scores for
-                                  box_predictions
-        """
-        box_predic = []
-        predic_box_classes = []
-        predic_box_scores = []
-
+    def _nms_boxes(self, filtetred_boxes, box_scores):
         x = filtered_boxes[:, 0]
         y = filtered_boxes[:, 1]
         w = filtered_boxes[:, 2]
@@ -190,6 +170,47 @@ class Yolo():
             order = order[inds + 1]
 
         keep = np.array(keep)
-        print(keep)
+        return(keep)
 
-        return (box_predic, predic_box_classes, predic_box_scores)
+    def non_max_suppression(self, filtered_boxes, box_classes, box_scores):
+        """ Non-max suppression to take the best box option for obj detection
+        Arg:
+            filtered_boxes: np shape (?, 4) containing all of the
+                            filtered bounding boxes.
+            box_classes: np shape (?,) containing the class number
+                         that the filtered_boxes predicts
+            box_scores: np shape (?) box scores for each box in filtered_boxes
+
+        Returns:(box_predic, predic_box_classes, predic_box_scores)
+            box_predictions: np shape (?, 4) all of the predicted
+                             bounding boxes ordered by class and box score
+            predicted_box_classes: np shape (?,) with class number for
+                                   box_predictions
+            predicted_box_scores: np shape (?) with the box scores for
+                                  box_predictions
+        """
+        boxes = filtered_boxes
+        classes = box_classes
+        scores = box_scores
+
+        nboxes, nclasses, nscores = [], [], []
+        for c in set(classes):
+            inds = np.where(classes == c)
+            b = boxes[inds]
+            c = classes[inds]
+            s = scores[inds]
+
+            keep = self._nms_boxes(b, s)
+
+            nboxes.append(b[keep])
+            nclasses.append(c[keep])
+            nscores.append(s[keep])
+
+        if not nclasses and not nscores:
+            return None, None, None
+
+        boxes = np.concatenate(nboxes)
+        classes = np.concatenate(nclasses)
+        scores = np.concatenate(nscores)
+
+        return (boxes, classes, scores)
