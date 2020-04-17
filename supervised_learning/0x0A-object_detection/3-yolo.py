@@ -140,14 +140,14 @@ class Yolo():
 
         return (filtered_boxes, box_classes, box_scores)
 
-    def _nms_boxes(self, filtetred_boxes, box_scores):
+    def _nms_boxes(self, filtered_boxes, box_scores):
         x = filtered_boxes[:, 0]
         y = filtered_boxes[:, 1]
         w = filtered_boxes[:, 2]
         h = filtered_boxes[:, 3]
 
         areas = w * h
-        predic_box_classes = -np.sort(-box_classes)[::-1]
+        #predic_box_classes = -np.sort(-box_classes)[::-1]
         order_box_scores = np.sort(box_scores)[::-1]
         order = box_scores.argsort()[::-1]
 
