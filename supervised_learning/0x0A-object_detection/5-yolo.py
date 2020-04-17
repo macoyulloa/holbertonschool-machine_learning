@@ -217,7 +217,7 @@ class Yolo():
 
         for i, img in enumerate(images):
             resized_image = cv2.resize(img, (input_h, input_w),
-                                       interpolation = cv2.INTER_CUBIC)
+                                       interpolation=cv2.INTER_CUBIC)
             resized_image = resized_image.astype('float32')
             max_pixel = resized_image.max()
             resized_image /= max_pixel
