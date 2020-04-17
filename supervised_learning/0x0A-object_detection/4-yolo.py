@@ -174,7 +174,7 @@ class Yolo():
 
         return (box_predic, predic_box_classes, predic_box_scores)
 
-    def load_images(folder_path):
+    def load_images(self, folder_path):
         """load the images from a folder_path
         Arg:
              folder_path: path to the folder holding all the images to load
@@ -182,13 +182,12 @@ class Yolo():
              images: a list of images as numpy.ndarray
              image_paths: list paths to the individual images in images
         """
-        image_paths = []
         images = []
 
         path = folder_path + '/*.jpg'
-
         image_paths = glob.glob(path, recursive=False)
-        for img in images_paths:
+        for img in image_paths:
             image = cv2.imread(img)
             images.append(image)
+        print(images)
         return (images, image_paths)
