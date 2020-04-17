@@ -207,23 +207,27 @@ class Yolo():
                           width of the images
                           2 => (image_height, image_width)
         """
-        images_dimensions = [img.shape for img in images]
+        images_dimensions = [img.shape[:2] for img in images]
         img_concat = np.concatenate(images_dimensions, axis=-1)
-        original_images = img_concat.reshape(len(images_dimensions), 3)
-        images_shapes = np.delete(original_images, -1, 1)
+        images_shapes = img_concat.reshape(len(images_dimensions), 2)
+        #images_shapes = np.delete(original_images, -1, 1)
 
         input_h = self.model.input.shape[2].value
         input_w = self.model.input.shape[1].value
         pimages = []
-        #resized_images = []
+        resized_images = []
 
-        image = [img[:,:,:] for img in images]
-        for i, img in enumerate(image):
+        for i, img in enumerate(images):
             resized_image = cv2.resize(img, (input_h, input_w),
                                        interpolation = cv2.INTER_CUBIC)
-        resized_image = [img.reshape()]
-        #resized_images.append(resized_image)
-        p_images_dimen = [img for img in resized_image]
+            #print(resized_image.dtype)
+            resized_image = resized_image.astype('float32')
+            max_pixel = resized_image.max()
+            resized_image /= max_pixel
+            #print(resized_image.max())
+            resized_images.append(resized_image)
+
+        p_images_dimen = [img for img in resized_images]
         #print(p_images_dimen)
         p_img_concat = np.concatenate(p_images_dimen, axis=0)
         print(p_img_concat)
