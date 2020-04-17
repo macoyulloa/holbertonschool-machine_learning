@@ -210,12 +210,12 @@ class Yolo():
         images_dimensions = [img.shape[:2] for img in images]
         images_shapes = np.stack(images_dimensions)
 
-        input_h = self.model.input.shape[2].value
-        input_w = self.model.input.shape[1].value
+        input_h = self.model.input.shape[1].value
+        input_w = self.model.input.shape[2].value
         resized_images = []
 
         for i, img in enumerate(images):
-            resized_image = cv2.resize(img, (input_w, input_h),
+            resized_image = cv2.resize(img, (input_h, input_w),
                                        interpolation=cv2.INTER_CUBIC)
             resized_image = resized_image.astype('float32')
             max_pixel = resized_image.max()
