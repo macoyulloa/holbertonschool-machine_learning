@@ -210,30 +210,20 @@ class Yolo():
         images_dimensions = [img.shape[:2] for img in images]
         img_concat = np.concatenate(images_dimensions, axis=-1)
         images_shapes = img_concat.reshape(len(images_dimensions), 2)
-        #images_shapes = np.delete(original_images, -1, 1)
 
         input_h = self.model.input.shape[2].value
         input_w = self.model.input.shape[1].value
-        pimages = []
         resized_images = []
 
         for i, img in enumerate(images):
             resized_image = cv2.resize(img, (input_h, input_w),
                                        interpolation = cv2.INTER_CUBIC)
-            #print(resized_image.dtype)
             resized_image = resized_image.astype('float32')
             max_pixel = resized_image.max()
             resized_image /= max_pixel
-            #print(resized_image.max())
             resized_images.append(resized_image)
 
-        p_images_dimen = [img for img in resized_images]
-        #print(p_images_dimen)
-        p_img_concat = np.concatenate(p_images_dimen, axis=0)
-        print(p_img_concat)
-        print(p_img_concat.shape)
-        #p_images = p_img_concat.reshape(len(images_dimensions), 3)
-        #print(p_images)
-        #print(p_images.shape)
+        pimages = np.stack(resized_images)
+        print(pimages.shape)
 
         return (pimages, images_shapes)
