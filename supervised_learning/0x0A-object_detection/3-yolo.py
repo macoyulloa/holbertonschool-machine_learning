@@ -171,4 +171,25 @@ class Yolo():
         order_box_scores = np.sort(box_scores)[::-1]
         order = box_scores.argsort()[::-1]
 
+        keep = []
+        while order.size > 0:
+            i = order[0]
+            keep.append(i)
+
+            xx1 = np.maximum(x[i], x[order[1:]])
+            yy1 = np.maximum(y[i], y[order[1:]])
+            xx2 = np.minimum(x[i] + w[i], x[order[1:]] + w[order[1:]])
+            yy2 = np.minimum(y[i] + h[i], y[order[1:]] + h[order[1:]])
+
+            w1 = np.maximum(0.0, xx2 - xx1 + 1)
+            h1 = np.maximum(0.0, yy2 - yy1 + 1)
+            inter = w1 * h1
+
+            ovr = inter / (areas[i] + areas[order[1:]] - inter)
+            inds = np.where(ovr <= self.nms_t)[0]
+            order = order[inds + 1]
+
+        keep = np.array(keep)
+        print(keep)
+
         return (box_predic, predic_box_classes, predic_box_scores)
