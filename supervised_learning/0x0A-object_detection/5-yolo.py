@@ -208,8 +208,7 @@ class Yolo():
                           2 => (image_height, image_width)
         """
         images_dimensions = [img.shape[:2] for img in images]
-        img_concat = np.concatenate(images_dimensions, axis=-1)
-        images_shapes = img_concat.reshape(len(images_dimensions), 2)
+        images_shapes = np.stack(images_dimensions)
 
         input_h = self.model.input.shape[2].value
         input_w = self.model.input.shape[1].value
@@ -224,6 +223,5 @@ class Yolo():
             resized_images.append(resized_image)
 
         pimages = np.stack(resized_images)
-        print(pimages.shape)
 
         return (pimages, images_shapes)
