@@ -83,8 +83,8 @@ class Yolo():
 
             box_xy += grid
             box_xy /= (grid_w, grid_h)
-            input_h = self.model.input.shape[1].value
-            input_w = self.model.input.shape[2].value
+            input_h = self.model.input.shape[2].value
+            input_w = self.model.input.shape[1].value
             box_wh /= (input_w, input_h)
             box_xy -= (box_wh / 2)
             box_xy1 = box_xy
