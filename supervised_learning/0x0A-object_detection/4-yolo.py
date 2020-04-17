@@ -189,5 +189,4 @@ class Yolo():
         for img in image_paths:
             image = cv2.imread(img)
             images.append(image)
-        print(images)
         return (images, image_paths)
