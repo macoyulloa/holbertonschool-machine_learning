@@ -140,8 +140,8 @@ class Yolo():
 
         return (filtered_boxes, box_classes, box_scores)
 
-    def _nms_boxes(self, filtered_boxes, box_scores):
-        """ mns boxes"""
+    def keeped_boxes_iou(self, filtered_boxes, box_scores):
+        """ selections of the boxes to keep by its score index """
         x = filtered_boxes[:, 0]
         y = filtered_boxes[:, 1]
         w = filtered_boxes[:, 2]
@@ -149,7 +149,6 @@ class Yolo():
 
         areas = w * h
 
-        order_box_scores = np.sort(box_scores)[::-1]
         order = box_scores.argsort()[::-1]
 
         keep = []
@@ -190,28 +189,21 @@ class Yolo():
             predicted_box_scores: np shape (?) with the box scores for
                                   box_predictions
         """
-        boxes = filtered_boxes
-        classes = box_classes
-        scores = box_scores
-
         nboxes, nclasses, nscores = [], [], []
-        for c in set(classes):
-            inds = np.where(classes == c)
-            b = boxes[inds]
-            c = classes[inds]
-            s = scores[inds]
+        for c in set(box_classes):
+            inds = np.where(box_classes == c)
+            b = filtered_boxes[inds]
+            c = box_classes[inds]
+            s = box_scores[inds]
 
-            keep = self._nms_boxes(b, s)
+            keep = self.keeped_boxes_iou(b, s)
 
             nboxes.append(b[keep])
             nclasses.append(c[keep])
             nscores.append(s[keep])
 
-        if not nclasses and not nscores:
-            return None, None, None
+        boxes_predic = np.concatenate(nboxes)
+        classes_predic = np.concatenate(nclasses)
+        scores_predic = np.concatenate(nscores)
 
-        boxes = np.concatenate(nboxes)
-        classes = np.concatenate(nclasses)
-        scores = np.concatenate(nscores)
-
-        return (boxes, classes, scores)
+        return (boxes_predic, classes_predic, scores_predic)
