@@ -141,7 +141,12 @@ class Yolo():
         return (filtered_boxes, box_classes, box_scores)
 
     def keeped_boxes_iou(self, filtered_boxes, box_scores):
-        """ selections of the boxes to keep by its score index """
+        """ selecting the boxes to keep by its score index
+            Arg:
+                - filtered_boxes: np.ndarray of boxes filtered
+                - box_scores: np.ndarray of scores filteres
+            Return: np.ndarray with the indexes of the box_scores to keep
+        """
         x = filtered_boxes[:, 0]
         y = filtered_boxes[:, 1]
         w = filtered_boxes[:, 2]
