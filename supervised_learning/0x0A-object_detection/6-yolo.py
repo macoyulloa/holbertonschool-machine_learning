@@ -280,7 +280,7 @@ class Yolo():
             text_class = self.class_names[box_classes[i]]
             text_score = str(box_scores_round[i])
             start_rectangle = (int(x), int(h))
-            start_text = (int(x) + 1, int(y) - 6)
+            start_text = (int(x) + 1, int(y) - 5)
             end_rectangle = (int(w), int(y))
             cv2.rectangle(image,
                           start_rectangle,
