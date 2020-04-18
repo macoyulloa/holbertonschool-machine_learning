@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Yolo algorithm construction"""
 import cv2
+import os
 import glob
 import tensorflow.keras as K
 import numpy as np
@@ -273,4 +274,27 @@ class Yolo():
             - The image should be saved in the directory detections,
             located in the current directory
         """
-        
+        box_scores_round = np.around(box_scores, decimals=2)
+        for i, box in enumerate(boxes):
+            x, y, w, h = box
+            text_class = self.class_names[box_classes[i]]
+            text_score = str(box_scores_round[i])
+            start_rectangle = (int(x), int(h))
+            start_text = (int(x) + 1, int(y) - 6)
+            end_rectangle = (int(w), int(y))
+            cv2.rectangle(image,
+                          start_rectangle,
+                          end_rectangle,
+                          (255, 0, 0), 2)
+            cv2.putText(image,
+                        text_class + " " + text_score,
+                        start_text,
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.5,(0,0,255), 1,
+                        cv2.LINE_AA)
+
+        cv2.imshow(file_name, image)
+        key = cv2.waitKey(0)
+        if key == ord('s'):
+            cv2.imwrite("./detections/" + file_name, image)
+        cv2.destroyAllWindows()
