@@ -314,4 +314,18 @@ class Yolo():
                  image_paths: list of image paths corresponding
                               to each prediction in predictions
         """
-        
+        predictions = []
+        images, image_paths = self.load_images(folder_path)
+        pimages, image_shapes = self.preprocess_images(images)
+
+        for i, pimage in enumerate (pimages):
+            outs = self.model.predict(pimage)
+            boxes, box_confidences, box_class_probs = self.process_outputs(outs, image_shapes[i])
+            boxes, box_classes, box_scores = self.filter_boxes(boxes, box_confidences, box_class_probs)
+            boxes, box_classes, box_scores = self.non_max_suppression(boxes, box_classes, box_scores)
+
+            self.show_boxes(images[i], boxes, box_classes, box_scores, image_paths[i])
+            predictions.append((boxes, box_classes, box_scores))
+
+        img_predic, img_paths_predic = self.load_images("./predictions")
+        return (predictions, img_paths_predic)
