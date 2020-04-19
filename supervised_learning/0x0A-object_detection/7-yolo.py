@@ -299,7 +299,7 @@ class Yolo():
             try:
                 os.mkdir("./detections")
             except:
-                pass
+                os.stat("./detections")
             cv2.imwrite("./detections/" + file_name, image)
         cv2.destroyAllWindows()
 
@@ -317,15 +317,14 @@ class Yolo():
         predictions = []
         images, image_paths = self.load_images(folder_path)
         pimages, image_shapes = self.preprocess_images(images)
+        outs = self.model.predict(pimages)
 
-        for i, pimage in enumerate (pimages):
-            outs = self.model.predict(pimage)
-            boxes, box_confidences, box_class_probs = self.process_outputs(outs, image_shapes[i])
+        for i, img in enumerate(images):
+            boxes, box_confidences, box_class_probs = self.process_outputs(outs[:][i,:,:,:,:], (img.shape[0], img.shape[1]))
             boxes, box_classes, box_scores = self.filter_boxes(boxes, box_confidences, box_class_probs)
             boxes, box_classes, box_scores = self.non_max_suppression(boxes, box_classes, box_scores)
-
-            self.show_boxes(images[i], boxes, box_classes, box_scores, image_paths[i])
+            name = image_paths[i].split('/')[-1]
+            self.show_boxes(img, boxes, box_classes, box_scores, name)
             predictions.append((boxes, box_classes, box_scores))
 
-        img_predic, img_paths_predic = self.load_images("./predictions")
-        return (predictions, img_paths_predic)
+        return (predictions, image_paths)
