@@ -290,7 +290,7 @@ class Yolo():
                         text_class + " " + text_score,
                         start_text,
                         cv2.FONT_HERSHEY_SIMPLEX,
-                        0.5,(0,0,255), 1,
+                        0.5, (0, 0, 255), 1,
                         cv2.LINE_AA)
 
         cv2.imshow(file_name, image)
@@ -299,6 +299,6 @@ class Yolo():
             try:
                 os.mkdir("./detections")
             except:
-                pass
+                os.stat("./detections")
             cv2.imwrite("./detections/" + file_name, image)
         cv2.destroyAllWindows()
