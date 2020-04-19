@@ -290,16 +290,13 @@ class Yolo():
                         text_class + " " + text_score,
                         start_text,
                         cv2.FONT_HERSHEY_SIMPLEX,
-                        0.5,(0,0,255), 1,
+                        0.5, (0, 0, 255), 1,
                         cv2.LINE_AA)
-
         cv2.imshow(file_name, image)
         key = cv2.waitKey(0)
         if key == ord('s'):
-            try:
-                os.mkdir("./detections")
-            except:
-                os.stat("./detections")
+            if not os.path.exists("./detections"):
+                os.makedirs("./detections")
             cv2.imwrite("./detections/" + file_name, image)
         cv2.destroyAllWindows()
 
@@ -320,9 +317,17 @@ class Yolo():
         outs = self.model.predict(pimages)
 
         for i, img in enumerate(images):
-            boxes, box_confidences, box_class_probs = self.process_outputs(outs[:][i,:,:,:,:], (img.shape[0], img.shape[1]))
-            boxes, box_classes, box_scores = self.filter_boxes(boxes, box_confidences, box_class_probs)
-            boxes, box_classes, box_scores = self.non_max_suppression(boxes, box_classes, box_scores)
+            outputs = [outs[0][i, :, :, :, :],
+                       outs[1][i, :, :, :, :],
+                       outs[2][i, :, :, :, :]]
+            img_original_dimensions = np.array([img.shape[0],
+                                                img.shape[1]])
+            bxs, bx_confcs, bx_class_probs = self.process_outputs(
+                outputs, img_original_dimensions)
+            boxes, box_classes, box_scores = self.filter_boxes(
+                bxs, bx_confcs, bx_class_probs)
+            boxes, box_classes, box_scores = self.non_max_suppression(
+                boxes, box_classes, box_scores)
             name = image_paths[i].split('/')[-1]
             self.show_boxes(img, boxes, box_classes, box_scores, name)
             predictions.append((boxes, box_classes, box_scores))
