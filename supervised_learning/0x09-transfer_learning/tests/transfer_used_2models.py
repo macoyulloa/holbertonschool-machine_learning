@@ -103,4 +103,4 @@ def preprocess_data(X, Y):
     Y = K.utils.to_categorical(Y, 10)
     Y = K.applications.xception.preprocess_input(Y)
     return X, Y
-  
+ 
