@@ -258,8 +258,7 @@ class Yolo():
             resized_image = cv2.resize(img, (input_h, input_w),
                                        interpolation=cv2.INTER_CUBIC)
             resized_image = resized_image.astype('float32')
-            max_pixel = resized_image.max()
-            resized_image /= max_pixel
+            resized_image /= 255
             resized_images.append(resized_image)
 
         pimages = np.stack(resized_images)
