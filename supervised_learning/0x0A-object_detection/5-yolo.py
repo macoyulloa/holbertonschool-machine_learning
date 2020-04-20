@@ -250,8 +250,8 @@ class Yolo():
         images_dimensions = [img.shape[:2] for img in images]
         images_shapes = np.stack(images_dimensions)
 
-        input_h = self.model.input.shape[1].value
-        input_w = self.model.input.shape[2].value
+        input_h = self.model.input.shape[2].value
+        input_w = self.model.input.shape[1].value
         resized_images = []
 
         for i, img in enumerate(images):
