@@ -39,7 +39,7 @@ if __name__ == '__main__':
     base_model1.summary()
 
     inputs2 =K.layers.Input(shape=(2048,))
-    init = K.initializer.he_uniform()
+    init = K.initializers.he_uniform()
     x = K.layers.Dense(512, activation=None, kernel_initializer=init)(inputs2)
     x = K.layers.BatchNormalization()(x)
     x = K.layers.LeakyReLU()(x)
@@ -48,7 +48,7 @@ if __name__ == '__main__':
 
     model_classifier = K.models.Model(inputs=inputs2, outputs=x)
 
-    es = K.callbacks.EarlyStopping(monitor='val_acc',
+    es = K.callbacks.EarlyStopping(monitor='val_loss',
                                    mode='max',
                                    patience=5)
 
