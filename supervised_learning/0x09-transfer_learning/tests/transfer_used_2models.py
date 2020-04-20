@@ -24,14 +24,11 @@ if __name__ == '__main__':
     print(x_train.shape)
     print(y_train.shape)
 
-    #x_train_p, y_train_oh = K.applications.xception.preprocess_input(x_train, y_train)
-    #x_valid_p, y_valid_oh = K.applications.xception.preprocess_input(x_valid, y_valid)
-
     inputs1 = K.layers.Input(shape=(32, 32, 3))
     print(inputs1)
     Y = K.layers.Lambda(lambda image: K.backend.resize_images(
-        image, 299/32, 299/32, "channels_last"))(inputs1)
-    print("Y")
+        image, int(299/32), int(299/32), "channels_last"))(inputs1)
+    print(Y)
     base_model1 = K.applications.xception.Xception(
         include_top=False,
         pooling='avg',
