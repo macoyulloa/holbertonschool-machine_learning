@@ -255,7 +255,7 @@ class Yolo():
         resized_images = []
 
         for i, img in enumerate(images):
-            resized_image = cv2.resize(img, (input_h, input_w),
+            resized_image = cv2.resize(img, (input_w, input_h),
                                        interpolation=cv2.INTER_CUBIC)
             resized_image = resized_image.astype('float32')
             resized_image /= 255
