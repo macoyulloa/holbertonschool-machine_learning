@@ -147,31 +147,33 @@ class Yolo():
                 - box_scores: np.ndarray of scores filteres
             Return: np.ndarray with the indexes of the box_scores to keep
         """
-        x = filtered_boxes[:, 0]
-        y = filtered_boxes[:, 1]
-        w = filtered_boxes[:, 2]
-        h = filtered_boxes[:, 3]
+        x1 = filtered_boxes[:, 0]
+        y1 = filtered_boxes[:, 1]
+        x2 = filtered_boxes[:, 2]
+        y2 = filtered_boxes[:, 3]
 
-        areas = w * h
+        areas = (x2 - x1 + 1) * (y2 - y1 + 1)
 
         order = box_scores.argsort()[::-1]
 
         keep = []
+        # while there are boxes:
         while order.size > 0:
             i = order[0]
             keep.append(i)
-
-            xx1 = np.maximum(x[i], x[order[1:]])
-            yy1 = np.maximum(y[i], y[order[1:]])
-            xx2 = np.minimum(x[i] + w[i], x[order[1:]] + w[order[1:]])
-            yy2 = np.minimum(y[i] + h[i], y[order[1:]] + h[order[1:]])
-
-            w1 = np.maximum(0.0, xx2 - xx1)
-            h1 = np.maximum(0.0, yy2 - yy1)
+            # find the intersection values
+            xx1 = np.maximum(x1[i], x1[order[1:]])
+            yy1 = np.maximum(y1[i], y1[order[1:]])
+            xx2 = np.minimum(x2[i], x2[order[1:]])
+            yy2 = np.minimum(y2[i], y2[order[1:]])
+            # find the weight and height max
+            w1 = np.maximum(0.0, xx2 - xx1 + 1)
+            h1 = np.maximum(0.0, yy2 - yy1 + 1)
             inter = w1 * h1
-
+            # IOU
             ovr = inter / (areas[i] + areas[order[1:]] - inter)
             inds = np.where(ovr <= self.nms_t)[0]
+            # filtering the list, quit values less than nms_t variable
             order = order[inds + 1]
 
         keep = np.array(keep)
@@ -210,6 +212,5 @@ class Yolo():
         boxes_predic = np.concatenate(nboxes)
         classes_predic = np.concatenate(nclasses)
         scores_predic = np.concatenate(nscores)
-        print(boxes_predic.shape)
-        print(scores_predic.shape)
+
         return (boxes_predic, classes_predic, scores_predic)
