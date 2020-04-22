@@ -166,8 +166,8 @@ class Yolo():
             xx2 = np.minimum(x[i] + w[i], x[order[1:]] + w[order[1:]])
             yy2 = np.minimum(y[i] + h[i], y[order[1:]] + h[order[1:]])
 
-            w1 = np.maximum(0.0, xx2 - xx1 + 1)
-            h1 = np.maximum(0.0, yy2 - yy1 + 1)
+            w1 = np.maximum(0.0, xx2 - xx1)
+            h1 = np.maximum(0.0, yy2 - yy1)
             inter = w1 * h1
 
             ovr = inter / (areas[i] + areas[order[1:]] - inter)
@@ -210,5 +210,6 @@ class Yolo():
         boxes_predic = np.concatenate(nboxes)
         classes_predic = np.concatenate(nclasses)
         scores_predic = np.concatenate(nscores)
-
+        print(boxes_predic.shape)
+        print(scores_predic.shape)
         return (boxes_predic, classes_predic, scores_predic)
