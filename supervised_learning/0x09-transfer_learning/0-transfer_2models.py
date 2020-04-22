@@ -24,18 +24,21 @@ if __name__ == '__main__':
     inputs1 = K.layers.Input(shape=(32, 32, 3))
 
     Y = K.layers.Lambda(lambda image: K.backend.resize_images(
-        image, int(299/32), int(299/32), "channels_last"))(inputs1)
+        image, (299/32), (299/32), "channels_last"))(inputs1)
 
     base_model1 = K.applications.xception.Xception(
         include_top=False,
         pooling='avg',
         input_tensor=Y)
+
+    print("start prediction")
+
     x_t = base_model1.predict(x_train_p)
     x_v = base_model1.predict(x_valid_p)
 
     base_model1.summary()
 
-    inputs2 =K.layers.Input(shape=(2048,))
+    inputs2 = K.layers.Input(shape=(2048,))
     init = K.initializers.he_uniform()
     x = K.layers.Dense(512, activation=None,
                        kernel_initializer=init)(inputs2)
@@ -69,7 +72,7 @@ if __name__ == '__main__':
                          validation_data=(x_v, y_valid_oh),
                          batch_size=512,
                          callbacks=[es, save],
-                         epochs=30,
+                         epochs=35,
                          verbose=1)
 
     del model_classifier
