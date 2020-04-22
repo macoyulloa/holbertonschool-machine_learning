@@ -5,6 +5,7 @@ import numpy as np
 import os
 import glob
 import cv2
+import csv
 
 
 def load_images(images_path, as_array=True):
@@ -45,3 +46,20 @@ def load_images(images_path, as_array=True):
         loaded_images = np.stack(loaded_images, axis=0)
 
     return (loaded_images, images_names)
+
+
+def load_csv(csv_path, params={}):
+    """ loads the content of a CVS file a lists of lists
+    Arg:
+        csv_path is the path to the csv to load
+        params are the parameters to load the csv with
+    Returns: list of lists representing the contents found in csv_path
+    """
+    csv_content = []
+
+    with open(csv_path) as csv_file:
+        # used csv (comma separated values file)
+        csv_reader = csv.reader(csv_file, params)
+        for lines in csv_reader:
+            csv_content.append(lines)
+    return csv_content
