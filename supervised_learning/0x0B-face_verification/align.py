@@ -47,9 +47,30 @@ class FaceAlign():
         if len(faces) >= 1:
             # if one face was detected: rectangle_face = faces[0]
             # multiple faces was detected, take the max box
-            for (i, rect) in enumerate (faces):
+            for (i, rect) in enumerate(faces):
                 if rect.area() > maxArea:
                     maxArea = rect.area()
                     rectangle_face = rect
 
         return rectangle_face
+
+    def find_landmarks(self, image, detection):
+        """ finding the facial landmark, based int the 68 face point
+            convert the landmark dlib coord into np.ndarray (x, y) coord
+        Arg:
+            image: np.ndarray from which to find facial landmarks
+            detection: dlib.rectangle with the boundary box of the face
+        Returns: np.ndarray shape (p, 2) containing the landmark points
+                 None in failure
+                 p: number of landmark points
+                 2: is the x and y coordinates of the point
+        """
+        landmark_coord = self.shape_predictor(image, detection)
+
+        coords = np.zeros((68, 2), dtype="int")
+        for i in range(0, 68):
+            coords[i] = (landmark_coord.part(i).x,
+                         landmark_coord.part(i).y)
+            landmarks_coords = np.stack(coords)
+
+        return landmarks_coords
