@@ -33,26 +33,27 @@ class FaceAlign():
                - If multiple faces are detected, return the largest area rec
                - If no faces, return dlib.rect that is the same as the image
         """
-        faces = self.detector(image, 1)
-        if not faces:
+        try:
+            faces = self.detector(image, 1)
+            maxArea = 0
+
+            if len(faces) == 0:
+                # non faces was detected
+                rectanlge_face = dlib.rectangle(left=0,
+                                                top=0,
+                                                right=image.shape[1],
+                                                bottom=image.shape[0])
+            if len(faces) >= 1:
+                # if one face was detected: rectangle_face = faces[0]
+                # multiple faces was detected, take the max box
+                for (i, rect) in enumerate(faces):
+                    if rect.area() > maxArea:
+                        maxArea = rect.area()
+                        rectangle_face = rect
+
+            return rectangle_face
+        except RuntimeError:
             return None
-        maxArea = 0
-
-        if len(faces) == 0:
-            # non faces was detected
-            rectanlge_face = dlib.rectangle(left=0,
-                                            top=0,
-                                            right=image.shape[1],
-                                            bottom=image.shape[0])
-        if len(faces) >= 1:
-            # if one face was detected: rectangle_face = faces[0]
-            # multiple faces was detected, take the max box
-            for (i, rect) in enumerate(faces):
-                if rect.area() > maxArea:
-                    maxArea = rect.area()
-                    rectangle_face = rect
-
-        return rectangle_face
 
     def find_landmarks(self, image, detection):
         """ finding the facial landmark, based int the 68 face point
@@ -71,11 +72,10 @@ class FaceAlign():
 
         coords = np.zeros((68, 2), dtype="int")
         for i in range(0, 68):
-            coords[i] = (landmark_coord.part(i).x,
-                         landmark_coord.part(i).y)
-            landmarks_coords = np.stack(coords)
+            coords[i] = [landmark_coord.part(i).x,
+                         landmark_coord.part(i).y]
 
-        return landmarks_coords
+        return coords
 
     def align(self, image, landmark_indices, anchor_points, size=96):
         """ aligns an image for face verification
@@ -89,12 +89,17 @@ class FaceAlign():
         Returns: np.ndarray shape (size, size, 3) with the aligned image
                  or None if no face is detected
         """
+        print(type(image))
         box = self.detect(image)
+        print(type(box))
+        print(box)
+        print(type(box))
         landmarks = self.find_landmarks(image, box)
+        print(type(landmarks))
         pts_eyeL_eyeR_nose = landmarks[landmark_indices]
         pts_eyeL_eyeR_nose = pts_eyeL_eyeR_nose.astype('float32')
-        anchor_points *= (size, size)
-        warp_mat = cv2.getAffineTransform(pts_eyeL_eyeR_nose, anchor_points)
+        anchor_pts_scaled = anchor_points * size
+        warp_mat = cv2.getAffineTransform(pts_eyeL_eyeR_nose, anchor_pts_scaled)
         warp_dst = cv2.warpAffine(image, warp_mat, (size, size))
 
         return warp_dst
