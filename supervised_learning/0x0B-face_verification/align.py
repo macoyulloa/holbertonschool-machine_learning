@@ -66,6 +66,8 @@ class FaceAlign():
                  2: is the x and y coordinates of the point
         """
         landmark_coord = self.shape_predictor(image, detection)
+        if not landmark_coord:
+            return None
 
         coords = np.zeros((68, 2), dtype="int")
         for i in range(0, 68):
@@ -74,3 +76,47 @@ class FaceAlign():
             landmarks_coords = np.stack(coords)
 
         return landmarks_coords
+
+    def align(self, image, landmark_indices, anchor_points, size=96):
+        """ aligns an image for face verification
+        Arg:
+            image: np.ndarray containing the image to be aligned
+            landmark_indices: np.ndarray of shape (3,) with indices of the
+                   three landmark points for the affine transformation
+            anchor_points: np.ndarray of shape (3, 2) with destination
+                   points for affine transform, scaled to the range [0, 1]
+            size: is the desired size of the aligned image
+        Returns: np.ndarray shape (size, size, 3) with the aligned image
+                 or None if no face is detected
+        """
+        image_rescaled = image/255
+        box = self.detect(image)
+        #x = box.left()
+        #y = box.top()
+        #w = box.right()
+        #h = box.bottom()
+        landmarks = self.find_landmarks(image, box)
+
+        eyeLeft_eyeRigh_nose = landmarks[landmark_indices]
+        #anchor_points = anchor_points*255
+        eyeLeft_eyeRigh_nose = eyeLeft_eyeRigh_nose / 255
+        print(eyeLeft_eyeRigh_nose)
+        print(anchor_points)
+        warp_mat = cv2.getAffineTransform(eyeLeft_eyeRigh_nose, anchor_points)
+        warp_dst = cv2.warpAffine(image, warp_mat, (size, size))
+        #left_eye = eyeLeft_eyeRigh_nose[0]
+        #right_eye = eyeLeft_eyeRigh_nose[1]
+        #nose = eyeLeft_eyeRigh_nose[2]
+
+        #center_of_forehead = ((left_eye[0] + right_eye[0]) // 2, (left_eye[1] + right_eye[1]) // 2)
+
+        #center_pred = (int((x + w) / 2), int((y + h) / 2))
+
+        #length_line1 = distance(center_of_forehead, nose)
+        #length_line2 = distance(center_pred, nose)
+        #length_line3 = distance(center_pred, center_of_forehead)
+
+        #cos_a = cosine_formula(length_line1, length_line2, length_line3)
+        #angle = np.arccos(cos_a)
+
+        return warp_dst
