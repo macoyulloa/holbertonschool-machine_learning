@@ -39,10 +39,11 @@ class FaceAlign():
 
             if len(faces) == 0:
                 # non faces was detected
-                rectanlge_face = dlib.rectangle(left=0,
+                rectangle_face = dlib.rectangle(left=0,
                                                 top=0,
                                                 right=image.shape[1],
                                                 bottom=image.shape[0])
+
             if len(faces) >= 1:
                 # if one face was detected: rectangle_face = faces[0]
                 # multiple faces was detected, take the max box
@@ -89,17 +90,13 @@ class FaceAlign():
         Returns: np.ndarray shape (size, size, 3) with the aligned image
                  or None if no face is detected
         """
-        print(type(image))
         box = self.detect(image)
-        print(type(box))
-        print(box)
-        print(type(box))
         landmarks = self.find_landmarks(image, box)
-        print(type(landmarks))
+
         pts_eyeL_eyeR_nose = landmarks[landmark_indices]
         pts_eyeL_eyeR_nose = pts_eyeL_eyeR_nose.astype('float32')
-        anchor_pts_scaled = anchor_points * size
-        warp_mat = cv2.getAffineTransform(pts_eyeL_eyeR_nose, anchor_pts_scaled)
+        anchor_scaled = anchor_points * size
+        warp_mat = cv2.getAffineTransform(pts_eyeL_eyeR_nose, anchor_scaled)
         warp_dst = cv2.warpAffine(image, warp_mat, (size, size))
 
         return warp_dst
