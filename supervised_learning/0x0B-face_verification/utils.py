@@ -64,6 +64,7 @@ def load_csv(csv_path, params={}):
             csv_content.append(lines)
     return csv_content
 
+
 def save_images(path, images, filenames):
     """saves images to a specific path
     Arg:
@@ -73,11 +74,14 @@ def save_images(path, images, filenames):
     Returns: True on success and False on failure
     """
     if os.path.exists(path):
-        for image, name in zip(images, filenames):
-            cv2.imwrite(path + name, image)
+        for img, name in zip(images, filenames):
+            # convert the image into a RGB format
+            image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            cv2.imwrite('./' + path + '/' + name, image)
         return True
     else:
         return False
+
 
 def generate_triplets(images, filenames, triplet_names):
     """ generates the triplets

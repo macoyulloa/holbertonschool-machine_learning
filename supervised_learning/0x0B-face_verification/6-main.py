@@ -10,6 +10,7 @@ fa = FaceAlign('models/landmarks.dat')
 images, filenames = load_images('HBTN', as_array=False)
 anchors = np.array([[0.194157, 0.16926692], [0.7888591, 0.15817115], [0.4949509, 0.5144414]], dtype=np.float32)
 aligned = []
+i = 0
 for image in images:
     aligned.append(fa.align(image, np.array([36, 45, 33]), anchors, 96))
 aligned = np.array(aligned)
