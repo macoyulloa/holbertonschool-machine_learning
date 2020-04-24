@@ -3,7 +3,7 @@
 
 import tensorflow
 import tensorflow as tf
-import numpy as np
+import tensorflow.keras as K
 
 
 class TripletLoss(tensorflow.keras.layers.Layer):
@@ -25,13 +25,11 @@ class TripletLoss(tensorflow.keras.layers.Layer):
                       tensors from the last layer of the model.
         Return: a tensor containing the triplet loss values
         """
-        anchor_output, positive_output, negative_output = inputs
-        d_pos = tf.reduce_sum(tf.square(anchor_output - positive_output), 1)
-        d_neg = tf.reduce_sum(tf.square(anchor_output - negative_output), 1)
-        triplet_values = self.alpha + d_pos - d_neg
-        loss = tf.maximum(0.0, tf.cast(triplet_values, tf.float32))
-        loss = tf.cast(loss, tf.float32)
-        return loss
+        anchor, positive, negative = inputs
+        p_dist = K.backend.sum(K.backend.square(anchor-positive), axis=-1)
+        n_dist = K.backend.sum(K.backend.square(anchor-negative), axis=-1)
+
+        return (K.backend.maximum(p_dist - n_dist + self.alpha, 0))
 
     def call(self, inputs):
         """ call function from my own keras layer
@@ -40,4 +38,6 @@ class TripletLoss(tensorflow.keras.layers.Layer):
                     output tensors from the last layer of the model
         return: the triplet loss tensor
         """
-        return (self.triplet_loss(inputs))
+        loss = self.triplet_loss(inputs)
+        self.add_loss(loss)
+        return loss
