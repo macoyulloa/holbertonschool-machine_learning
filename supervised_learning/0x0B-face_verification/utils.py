@@ -95,16 +95,20 @@ def generate_triplets(images, filenames, triplet_names):
        - P np.ndarray (m, h, w, 3) has the positive images for all m triplets
        - N np.ndarray (m, h, w, 3) has the negative images for all m triplets
     """
+    img_names = [filenames[i].split('.')[0] for i in range(len(filenames))]
+
     a_names = [names[0] for names in triplet_names]
     p_names = [names[1] for names in triplet_names]
     n_names = [names[2] for names in triplet_names]
 
-    inds_a = [x for x in range(len(filenames)) if filenames[x] in a_names]
-    inds_p = [x for x in range(len(filenames)) if filenames[x] in p_names]
-    inds_n = [x for x in range(len(filenames)) if filenames[x] in n_names]
+    inds_a = [x for x in range(len(img_names)) if img_names[x] in a_names]
+    inds_p = [x for x in range(len(img_names)) if img_names[x] in p_names]
+    inds_n = [x for x in range(len(img_names)) if img_names[x] in n_names]
 
     A = images[inds_a]
     P = images[inds_p]
     N = images[inds_n]
-
+    print(A.shape)
+    print(P.shape)
+    print(N.shape)
     return [A, P, N]
