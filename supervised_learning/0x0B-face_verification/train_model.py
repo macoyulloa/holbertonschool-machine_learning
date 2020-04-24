@@ -26,6 +26,9 @@ class TrainModel():
             self.base_model = tf.keras.models.load_model(model_path)
         self.alpha = alpha
         # create the new model: training model
+        A = np.random.uniform(0, 1, (2, 128))
+        P = np.random.uniform(0, 1, (2, 128))
+        N = np.random.uniform(0, 1, (2, 128))
         inputs = [A, P, N]
         output = TripletLoss(base_model.output)
         training_model = tf.keras.models.Model(inputs, output)
