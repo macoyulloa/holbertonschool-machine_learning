@@ -84,14 +84,14 @@ class TrainModel():
     @staticmethod
     def accuracy(y_true, y_pred):
         """ define the accuracy """
-        return roc_auc_score(yprobs, probs)
+        return roc_auc_score(y_true, y_pred)
 
     def best_tau(self, images, identities, thresholds):
         """
         """
-        y_true =
-        y_pred =
-        tau =
+        y_true = []
+        y_pred = []
+        tau = []
         acc = self.accuracy(y_true, y_pred)
         f1_score = self.f1_score(y_true, y_pred)
 
