@@ -38,8 +38,8 @@ class TrainModel():
         encoded_n = self.base_model(N)
         encoded = [encoded_a, encoded_p, encoded_n]
         # TripletLoss layer
-        loss_layer = TripletLossLayer(alpha=alpha,
-                                      name='triplet_loss')(encoded)
+        loss_layer = TripletLoss(alpha=alpha,
+                                 name='triplet_loss')(encoded)
         # create the new model: training model, connect inputs, outputs
         self.training_model = K.models.Model(inputs, loss_layer)
         self.training_model.compile(loss=None, optimizer='Adam')
@@ -97,6 +97,10 @@ class TrainModel():
             y_true,
             K.backend.round(y_pred)))
         return acc
+
+    def distance(self, emb1, emb2):
+        """ distances """
+        return np.sum(np.square(emb1 - emb2))
 
     def best_tau(self, images, identities, thresholds):
         """
