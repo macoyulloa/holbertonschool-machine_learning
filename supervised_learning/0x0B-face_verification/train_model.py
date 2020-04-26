@@ -56,7 +56,7 @@ class TrainModel():
         Returns: the History output from the training
         """
         history = self.training_model.fit(
-            x_t, y_train_oh,
+            triplets, y_train_oh,
             validation_split=validation_split
             batch_size=batch_size,
             epochs=epochs,

@@ -27,6 +27,7 @@ class FaceVerification():
             - images are the images to retrieve the embeddings of
         Returns: a numpy.ndarray of embeddings
         """
+        embedding = self.model.predict(images)
         return embeddings
 
     def verify(self, image, tau=0.5):
