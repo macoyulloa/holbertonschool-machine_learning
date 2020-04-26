@@ -38,11 +38,11 @@ class TrainModel():
         encoded = [encoded_a, encoded_p, encoded_n]
         # TripletLoss layer
         loss_layer = TripletLossLayer(alpha=alpha,
-                                      name='triplet_loss_layer')(encoded)
+                                      name='triplet_loss')(encoded)
         # create the new model: training model, connect inputs, outputs
-        training_model = K.models.Model(inputs, loss_layer)
-        training_model.compile(optimizer='Adam')
-        training_model.save()
+        self.training_model = K.models.Model(inputs, loss_layer)
+        self.training_model.compile(loss=None, optimizer='Adam')
+        self.training_model.save()
 
     def train(self, triplets, epochs=5, batch_size=32,
               validation_split=0.3, verbose=True):
@@ -56,12 +56,12 @@ class TrainModel():
         Returns: the History output from the training
         """
         history = self.training_model.fit(
-            triplets, y_train_oh,
+            triplets,
             validation_split=validation_split
             batch_size=batch_size,
             epochs=epochs,
             verbose=verbose)
-        return history
+        return history.History
 
     def save(self, save_path):
         """saves the base embedding model
