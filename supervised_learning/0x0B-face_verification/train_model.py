@@ -27,6 +27,7 @@ class TrainModel():
             self.base_model = tf.keras.models.load_model(model_path)
         self.alpha = alpha
         # define the tensors for the three input images
+        input_shape = (96, 96, 3)
         A = K.Input(input_shape, name="A")
         P = K.Input(input_shape, name="P")
         N = K.Input(input_shape, name="N")
@@ -57,7 +58,7 @@ class TrainModel():
         """
         history = self.training_model.fit(
             triplets,
-            validation_split=validation_split
+            validation_split=validation_split,
             batch_size=batch_size,
             epochs=epochs,
             verbose=verbose)
@@ -92,7 +93,10 @@ class TrainModel():
     @staticmethod
     def accuracy(y_true, y_pred):
         """ define the accuracy """
-        return roc_auc_score(y_true, y_pred)
+        acc = K.backend.mean(K.backend.equal(
+            y_true,
+            K.backend.round(y_pred)))
+        return acc
 
     def best_tau(self, images, identities, thresholds):
         """
