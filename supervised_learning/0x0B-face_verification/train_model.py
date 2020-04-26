@@ -26,13 +26,21 @@ class TrainModel():
         with tf.keras.utils.CustomObjectScope({'tf': tf}):
             self.base_model = tf.keras.models.load_model(model_path)
         self.alpha = alpha
-        # create the new model: training model
-        A = np.random.uniform(0, 1, (2, 128))
-        P = np.random.uniform(0, 1, (2, 128))
-        N = np.random.uniform(0, 1, (2, 128))
+        # define the tensors for the three input images
+        A = K.Input(input_shape, name="A")
+        P = K.Input(input_shape, name="P")
+        N = K.Input(input_shape, name="N")
         inputs = [A, P, N]
-        output = TripletLoss(base_model.output)
-        training_model = tf.keras.models.Model(inputs, output)
+        # generate the encoding (feature vectors) for the three images
+        encoded_a = self.base_model(A)
+        encoded_p = self.base_model(P)
+        encoded_n = self.base_model(N)
+        encoded = [encoded_a, encoded_p, encoded_n]
+        # TripletLoss layer
+        loss_layer = TripletLossLayer(alpha=alpha,
+                                      name='triplet_loss_layer')(encoded)
+        # create the new model: training model, connect inputs, outputs
+        training_model = K.models.Model(inputs, loss_layer)
         training_model.compile(optimizer='Adam')
         training_model.save()
 
