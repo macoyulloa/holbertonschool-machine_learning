@@ -57,11 +57,11 @@ def load_csv(csv_path, params={}):
     """
     csv_content = []
 
-    with open(csv_path) as csv_file:
+    with open(csv_path, encoding="utf-8") as csv_file:
         # used csv (comma separated values file)
         csv_reader = csv.reader(csv_file, params)
-        for lines in csv_reader:
-            csv_content.append(lines)
+        for line in csv_reader:
+            csv_content.append(line)
     return csv_content
 
 
@@ -95,20 +95,32 @@ def generate_triplets(images, filenames, triplet_names):
        - P np.ndarray (m, h, w, 3) has the positive images for all m triplets
        - N np.ndarray (m, h, w, 3) has the negative images for all m triplets
     """
-    img_names = [filenames[i].split('.')[0] for i in range(len(filenames))]
+    inds_a, inds_p, inds_n = [], [], []
 
-    a_names = [names[0] for names in triplet_names]
-    p_names = [names[1] for names in triplet_names]
-    n_names = [names[2] for names in triplet_names]
+    names = [filenames[i].split('.')[0] for i in range(len(filenames))]
+    # Reeplace values with differents characters
+    for triplet_name in triplet_names:
+        for name in triplet_name:
+            if name not in names:
+                # Reeplace special characters as í, é, ñ
+                new_value = name.encode('utf-8').decode('utf-8')
+                new_value = new_value.replace('eÌ', 'é')
+                new_value = new_value.replace('iÌ', chr(105) + chr(769))
+                new_value = new_value.replace('nÌƒ', chr(110)+chr(771))
+                new_value = new_value.replace('\x81', '')
+                new_value = new_value.replace('\x81', '')
+                # Find the name of the triplet in names array and replace it
+                triplet_name[triplet_name.index(name)] = new_value
 
-    inds_a = [x for x in range(len(img_names)) if img_names[x] in a_names]
-    inds_p = [x for x in range(len(img_names)) if img_names[x] in p_names]
-    inds_n = [x for x in range(len(img_names)) if img_names[x] in n_names]
+    # Create the list with indices of the values
+    for triplet_name in triplet_names:
+        inds_a.append(names.index(triplet_name[0]))
+        inds_p.append(names.index(triplet_name[1]))
+        inds_n.append(names.index(triplet_name[2]))
 
+    # Create arrays with the images
     A = images[inds_a]
     P = images[inds_p]
     N = images[inds_n]
-    print(A.shape)
-    print(P.shape)
-    print(N.shape)
+
     return [A, P, N]
