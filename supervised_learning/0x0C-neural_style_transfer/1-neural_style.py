@@ -31,20 +31,30 @@ class NST:
             Eager execution: TensorFlow’s imperative programming
                              environment, evaluates operations immediately
         """
+        c_error = "content_image must be a numpy.ndarray with shape (h, w, 3)"
         if not isinstance(style_image, np.ndarray):
-            if len(style_image) != 3 or style_image.shape[2] != 3:
-                raise TypeError(
-                    "style_image must be a numpy.ndarray with shape (h, w, 3)")
+            raise TypeError(
+                "style_image must be a numpy.ndarray with shape (h, w, 3)")
+        if len(style_image.shape) != 3:
+            raise TypeError(
+                "style_image must be a numpy.ndarray with shape (h, w, 3)")
+        if style_image.shape[2] != 3:
+            raise TypeError(
+                "style_image must be a numpy.ndarray with shape (h, w, 3)")
 
         if not isinstance(content_image, np.ndarray):
-            if len(content_image) != 3 or content_image.shape[2] != 3:
-                raise TypeError(
-                    "content_image must be a numpy.ndarray with shape (h, w, 3)"
-                )
+            raise TypeError(c_error)
+        if len(content_image.shape) != 3:
+            raise TypeError(c_error)
+        if content_image.shape[2] != 3:
+            raise TypeError(c_error)
 
+        if isinstance(alpha, str):
+            raise TypeError("alpha must be a non-negative number")
         if alpha < 0:
             raise TypeError("alpha must be a non-negative number")
-
+        if isinstance(beta, str):
+            raise TypeError("beta must be a non-negative number")
         if beta < 0:
             raise TypeError("beta must be a non-negative number")
 
@@ -65,9 +75,14 @@ class NST:
            - A scaled image Tensor
         """
         if not isinstance(image, np.ndarray):
-            if len(image) != 3 or image.shape[2] != 3:
-                raise TypeError(
-                    "image must be a numpy.ndarray with shape (h, w, 3)")
+            raise TypeError(
+                "image must be a numpy.ndarray with shape (h, w, 3)")
+        if len(image.shape) != 3:
+            raise TypeError(
+                "image must be a numpy.ndarray with shape (h, w, 3)")
+        if image.shape[2] != 3:
+            raise TypeError(
+                "image must be a numpy.ndarray with shape (h, w, 3)")
 
         image = np.expand_dims(image, axis=0)
         bicubic = tf.image.ResizeMethod.BICUBIC
@@ -100,6 +115,4 @@ class NST:
 
         model_outputs = style_outputs + content_outputs
         # Build model
-        model = tf.keras.models.Model(vgg.input, model_outputs)
-
-        return model
+        return tf.keras.models.Model(vgg.input, model_outputs)
