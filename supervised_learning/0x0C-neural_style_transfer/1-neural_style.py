@@ -69,22 +69,10 @@ class NST:
                 raise TypeError(
                     "image must be a numpy.ndarray with shape (h, w, 3)")
 
-        h, w, _ = image.shape
-
-        if h > w:
-            new_h = 512
-            new_w = (w / h) * 512
-        if w > h:
-            new_w = 512
-            new_h = (h / w) * 512
-        else:
-            new_h = 512
-            new_w = 512
-
         image = np.expand_dims(image, axis=0)
         bicubic = tf.image.ResizeMethod.BICUBIC
         img_resiz = tf.image.resize_images(image,
-                                           (new_h, new_w),
+                                           (512, 512),
                                            method=bicubic,
                                            preserve_aspect_ratio=True)
         img_rescaled = tf.div(
