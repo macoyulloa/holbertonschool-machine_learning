@@ -53,6 +53,7 @@ class NST:
         self.content_image = NST.scale_image(content_image)
         self.alpha = alpha
         self.beta = beta
+        self.model = self.load_model()
 
     @staticmethod
     def scale_image(image):
@@ -91,3 +92,35 @@ class NST:
             tf.subtract(tf.reduce_max(img_resiz), tf.reduce_min(img_resiz)))
 
         return img_rescaled
+
+    def load_model(self):
+        """ load the model used to calculate the cost
+            saved the model in the instance attribute model
+        """
+        vgg = tf.keras.applications.vgg19.VGG19(include_top=False,
+                                                pooling='avg',
+                                                weights='imagenet')
+
+        style_outputs, content_outputs = [], []
+        # Get output layers corresponding to style and content layers
+        for layer in vgg.layers:
+            layer.trainable = False
+            if layer.name in self.style_layers:
+                style_outputs.append(layer.output)
+            if layer.name in self.content_layer:
+                content_outputs.append(layer.output)
+
+        model_outputs = style_outputs + content_outputs
+        # Build model
+        model = tf.keras.models.Model(vgg.input, model_outputs)
+
+        return model
+
+    def gram_matrix(input_layer):
+        """ calculate the gram matrices
+        Arg:
+         - input_layer: instance of tf.Tensor or tf.Variable of shape
+                    (1, h, w, c) with layer.output to calculate gram matrix
+        Returns: tf.Tensor shape (1, c, c) with gram matrix of input_layer
+        """
+        if not input_layer
