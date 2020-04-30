@@ -31,6 +31,7 @@ class NST:
             Eager execution: TensorFlow’s imperative programming
                              environment, evaluates operations immediately
         """
+        c_error = "content_image must be a numpy.ndarray with shape (h, w, 3)"
         if not isinstance(style_image, np.ndarray):
             if len(style_image) != 3 or style_image.shape[2] != 3:
                 raise TypeError(
@@ -38,9 +39,7 @@ class NST:
 
         if not isinstance(content_image, np.ndarray):
             if len(content_image) != 3 or content_image.shape[2] != 3:
-                raise TypeError(
-                    "content_image must be a numpy.ndarray with shape (h, w, 3)"
-                )
+                raise TypeError(c_error)
 
         if alpha < 0:
             raise TypeError("alpha must be a non-negative number")
