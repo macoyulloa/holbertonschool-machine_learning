@@ -141,8 +141,10 @@ class NST:
         nl_style = len(self.style_layers)
         # batch compute content and style features
         style_img = self.style_image
+        print(style_img.shape)
         content_img = self.content_image
-        #stack_images = np.concatenate([style_img, content_img], axis=0)
+        #stack_images = tf.concat([style_img, content_img], axis=0)
+        print([style_img, content_img])
         m_outputs = self.model([style_img, content_img])
         print(len(m_outputs))
         # Get the style and content feature representations from our model
