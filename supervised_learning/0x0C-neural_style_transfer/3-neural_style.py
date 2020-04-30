@@ -54,7 +54,8 @@ class NST:
         self.alpha = alpha
         self.beta = beta
         self.model = self.load_model()
-        self.gram_style_features, self.content_feature = self.generate_features()
+        self.gram_style_features, _ = self.generate_features()
+        _, self.content_feature = self.generate_features()
 
     @staticmethod
     def scale_image(image):
@@ -70,22 +71,10 @@ class NST:
                 raise TypeError(
                     "image must be a numpy.ndarray with shape (h, w, 3)")
 
-        h, w, _ = image.shape
-
-        if h > w:
-            new_h = 512
-            new_w = (w / h) * 512
-        if w > h:
-            new_w = 512
-            new_h = (h / w) * 512
-        else:
-            new_h = 512
-            new_w = 512
-
         image = np.expand_dims(image, axis=0)
         bicubic = tf.image.ResizeMethod.BICUBIC
         img_resiz = tf.image.resize_images(image,
-                                           (new_h, new_w),
+                                           (512, 512),
                                            method=bicubic,
                                            preserve_aspect_ratio=True)
         img_rescaled = tf.div(
@@ -149,19 +138,14 @@ class NST:
         Returns:
            returns the style features and the content features.
         """
-        n_style_l = len(self.style_layers)
-        print(n_style_l)
+        nl_style = len(self.style_layers)
         # batch compute content and style features
         style_img = self.style_image
-        
         content_img = self.content_image
-        
-        print(style_img.shape)
-        print(content_img.shape)
-        style_outputs = self.model(self.style_image)
-        print(style_outputs)
+        #stack_images = np.concatenate([style_img, content_img], axis=0)
+        m_outputs = self.model([style_img, content_img])
+        print(len(m_outputs))
         # Get the style and content feature representations from our model
-        style_features = [style_layer[0] for style_layer in style_outputs[:n_style_l]]
-        print(style_features)
-        #content_features = [content_layer[1] for content_layer in model_outputs[n_style_l:]]
-        return style_features,
+        style_features = [self.gram_matrix(sl) for sl in m_outputs[:nl_style]]
+        content_feature = m_outputs[-1]
+        return style_features, content_feature
