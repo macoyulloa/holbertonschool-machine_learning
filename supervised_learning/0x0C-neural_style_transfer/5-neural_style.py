@@ -217,6 +217,10 @@ class NST:
         Return: the style cost
         """
         len_style_l = (len(self.style_layers))
+        if not isinstance(style_outputs, list):
+            raise TypeError(
+                "style_outputs must be a list with a length of {}".format(
+                    len_style_l))
         if (len(style_outputs)) != len_style_l:
             raise TypeError(
                 "style_outputs must be a list with a length of {}".format(
