@@ -89,8 +89,8 @@ class NST:
                                        (512, 512),
                                        method=bicubic,
                                        preserve_aspect_ratio=True)
+        image = tf.cast(image, tf.float32)
         image = image / 255
         image = tf.clip_by_value(image, clip_value_min=0, clip_value_max=1)
-        image = tf.cast(image, tf.float32)
 
         return image
