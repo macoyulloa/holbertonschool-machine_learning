@@ -59,11 +59,11 @@ class NST:
             raise TypeError("beta must be a non-negative number")
 
         tf.enable_eager_execution()
-        self.style_image = NST.scale_image(style_image)
-        self.content_image = NST.scale_image(content_image)
+        self.style_image = self.scale_image(style_image)
+        self.content_image = self.scale_image(content_image)
         self.alpha = alpha
         self.beta = beta
-        self.model = self.load_model()
+        self.load_model()
 
     @staticmethod
     def scale_image(image):
@@ -86,23 +86,34 @@ class NST:
 
         image = np.expand_dims(image, axis=0)
         bicubic = tf.image.ResizeMethod.BICUBIC
-        img_resiz = tf.image.resize_images(image,
-                                           (512, 512),
-                                           method=bicubic,
-                                           preserve_aspect_ratio=True)
-        img_rescaled = tf.div(
-            tf.subtract(img_resiz, tf.reduce_min(img_resiz)),
-            tf.subtract(tf.reduce_max(img_resiz), tf.reduce_min(img_resiz)))
+        image = tf.image.resize_images(image,
+                                       (512, 512),
+                                       method=bicubic,
+                                       preserve_aspect_ratio=True)
+        image = image / 255
+        image = tf.clip_by_value(image, clip_value_min=0, clip_value_max=1)
+        image = tf.cast(image, tf.float32)
 
-        return img_rescaled
+        return image
 
     def load_model(self):
-        """ load the model used to calculate the cost
-            saved the model in the instance attribute model
+        """ load the model VGG19 used to calculate the cost
+            and access to the intermediate layers.
+
+        Saved:
+            keras model that takes image inputs and outputs the style and
+            content intermediate layers.
+
+        Return: void function
         """
-        vgg = tf.keras.applications.vgg19.VGG19(include_top=False,
-                                                pooling='avg',
-                                                weights='imagenet')
+        vgg_load = tf.keras.applications.vgg19.VGG19(include_top=False,
+                                                     weights='imagenet')
+
+        custom_objects = {'MaxPooling2D': tf.keras.layers.AveragePooling2D}
+        vgg_load.save("base_model")
+
+        vgg = tf.keras.models.load_model("base_model",
+                                         custom_objects=custom_objects)
 
         style_outputs, content_outputs = [], []
         # Get output layers corresponding to style and content layers
@@ -115,7 +126,8 @@ class NST:
 
         model_outputs = style_outputs + content_outputs
         # Build model
-        return tf.keras.models.Model(vgg.input, model_outputs)
+
+        self.model = tf.keras.models.Model(vgg.input, model_outputs)
 
     @staticmethod
     def gram_matrix(input_layer):
