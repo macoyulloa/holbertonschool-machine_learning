@@ -99,9 +99,12 @@ class NST:
     def load_model(self):
         """ load the model VGG19 used to calculate the cost
             and access to the intermediate layers.
-        Returns:
+
+        Saved:
             keras model that takes image inputs and outputs the style and
             content intermediate layers.
+
+        Return: void function
         """
         vgg_load = tf.keras.applications.vgg19.VGG19(include_top=False,
                                                      weights='imagenet')
