@@ -87,7 +87,8 @@ class NST:
         bicubic = tf.image.ResizeMethod.BICUBIC
         image = tf.image.resize_images(image,
                                        (512, 512),
-                                       method=bicubic)
+                                       method=bicubic,
+                                       preserve_aspect_ratio=True)
         image = image / 255
         image = tf.clip_by_value(image, clip_value_min=0, clip_value_max=1)
 
