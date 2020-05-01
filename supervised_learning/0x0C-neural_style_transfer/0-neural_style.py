@@ -59,8 +59,8 @@ class NST:
             raise TypeError("beta must be a non-negative number")
 
         tf.enable_eager_execution()
-        self.style_image = NST.scale_image(style_image)
-        self.content_image = NST.scale_image(content_image)
+        self.style_image = self.scale_image(style_image)
+        self.content_image = self.scale_image(content_image)
         self.alpha = alpha
         self.beta = beta
 
@@ -85,12 +85,10 @@ class NST:
 
         image = np.expand_dims(image, axis=0)
         bicubic = tf.image.ResizeMethod.BICUBIC
-        img_resiz = tf.image.resize_images(image,
-                                           (512, 512),
-                                           method=bicubic,
-                                           preserve_aspect_ratio=True)
-        img_rescaled = tf.div(
-            tf.subtract(img_resiz, tf.reduce_min(img_resiz)),
-            tf.subtract(tf.reduce_max(img_resiz), tf.reduce_min(img_resiz)))
+        image = tf.image.resize_images(image,
+                                       (512, 512),
+                                       method=bicubic)
+        image = image / 255
+        image = tf.clip_by_value(image, clip_value_min=0, clip_value_max=1)
 
-        return img_rescaled
+        return image
