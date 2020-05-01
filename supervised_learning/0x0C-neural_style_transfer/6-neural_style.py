@@ -171,7 +171,7 @@ class NST:
             tf.expand_dims(
                 style_layer[0],
                 axis=0))) for style_layer in m_outputs[:nl_style]]
-        content_features = (m_outputs[-1][1])
+        content_features = tf.expand_dims(m_outputs[-1][1], axis=0)
         return style_features, content_features
 
     def layer_style_cost(self, style_output, gram_target):
