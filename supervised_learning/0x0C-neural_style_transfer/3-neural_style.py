@@ -174,10 +174,10 @@ class NST:
         m_outputs = self.model(stack_images)
         # Get the style and content feature representations from our model
 
-        self.style_features = [self.gram_matrix((
+        self.gram_style_features = [self.gram_matrix((
             tf.expand_dims(
                 style_layer[0],
                 axis=0)
         )) for style_layer in m_outputs[:nl_style]]
 
-        self.content_features = tf.expand_dims(m_outputs[-1][1], axis=0)
+        self.content_feature = tf.expand_dims(m_outputs[-1][1], axis=0)
