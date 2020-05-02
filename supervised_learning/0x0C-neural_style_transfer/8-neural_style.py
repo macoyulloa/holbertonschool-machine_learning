@@ -294,3 +294,24 @@ class NST:
         J = (self.alpha * J_content) + (self.beta * J_style)
 
         return J, J_content, J_style
+
+        def compute_grads(self, generated_image):
+                    """ calculates the gradients for the tf.Tensor
+        Arg:
+           - generated image of shape (1, nh, nw, 3)
+
+        Return: (gradients, J_total, J_content, J_style)
+           - gradients tf.Tensor with the gradients for the generated image
+           - J_total is the total cost for the generated image
+           - J_content is the content cost for the generated image
+           - J_style is the style cost for the generated image
+        """
+        s = self.content_image.shape
+        if not isinstance(generated_image, (tf.Tensor, tf.Variable)):
+            raise TypeError(
+                "generated_image must be a tensor of shape {}".format(s))
+        if (generated_image.shape != s):
+            raise TypeError(
+                "generated_image must be a tensor of shape {}".format(s))
+
+        
