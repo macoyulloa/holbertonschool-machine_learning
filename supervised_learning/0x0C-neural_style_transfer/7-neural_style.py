@@ -275,7 +275,7 @@ class NST:
             - J_content is the content cost
             - J_style is the style cost
         """
-        s = self.content_image
+        s = self.content_image.shape
         if not isinstance(generated_image, (tf.Tensor, tf.Variable)):
             raise TypeError(
                 "generated_image must be a tensor of shape {}".format(s))
@@ -283,8 +283,12 @@ class NST:
             raise TypeError(
                 "generated_image must be a tensor of shape {}".format(s))
 
-        content_output = []
-        style_outputs = []
+        vgg19 = tf.keras.applications.vgg19
+        preprocecced = vgg19.preprocess_input(self.content_image * 255)
+        style_outputs = self.model(preprocecced)[:-1]
+        outputs = self.model(preprocecced)
+        content_output = outputs[-1][0]
+
         J_content = self.content_cost(content_output)
         J_style = self.style_cost(style_outputs)
         J = (self.alpha * J_content) + (self.beta * J_style)
