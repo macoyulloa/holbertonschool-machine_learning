@@ -162,25 +162,26 @@ class NST:
         Returns:
            returns the style features and the content features.
         """
-        nl_style = len(self.style_layers)
+                nl_style = len(self.style_layers)
         # load and process the images: content and style image
         content_img = self.content_image
         h = int(content_img.shape[1])
         w = int(content_img.shape[2])
         style_img = self.style_image
-        style_size = tf.image.resize_image_with_crop_or_pad(style_img, h, w)
+        style_img = tf.image.resize_image_with_crop_or_pad(style_img, h, w)
         # batch compute content and style features
-        stack_images = tf.concat([style_size, content_img], axis=0)
-        m_outputs = self.model(stack_images)
+        vgg19 = tf.keras.applications.vgg19
+        content = vgg19.preprocess_input(content_img * 255)
+        style = vgg19.preprocess_input(style_img * 255)
         # Get the style and content feature representations from our model
+        out_content = self.model(content)
+        outs_style = self.model(style)
 
-        self.gram_style_features = [self.gram_matrix((
-            tf.expand_dims(
-                style_layer[0],
-                axis=0)
-        )) for style_layer in m_outputs[:nl_style]]
+        self.gram_style_features = [self.gram_matrix(
+            style_layer
+        ) for style_layer in outs_style[:nl_style]]
 
-        self.content_feature = tf.expand_dims(m_outputs[-1][1], axis=0)
+        self.content_feature = out_content[-1]
 
     def layer_style_cost(self, style_output, gram_target):
         """ calculate the style cost for a single layer
