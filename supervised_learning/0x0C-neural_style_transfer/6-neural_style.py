@@ -59,13 +59,12 @@ class NST:
             raise TypeError("beta must be a non-negative number")
 
         tf.enable_eager_execution()
-        self.style_image = NST.scale_image(style_image)
-        self.content_image = NST.scale_image(content_image)
+        self.style_image = self.scale_image(style_image)
+        self.content_image = self.scale_image(content_image)
         self.alpha = alpha
         self.beta = beta
-        self.model = self.load_model()
-        self.gram_style_features, _ = self.generate_features()
-        _, self.content_feature = self.generate_features()
+        self.load_model()
+        self.generate_features()
 
     @staticmethod
     def scale_image(image):
@@ -88,27 +87,34 @@ class NST:
 
         image = np.expand_dims(image, axis=0)
         bicubic = tf.image.ResizeMethod.BICUBIC
-        img_resiz = tf.image.resize_images(image,
-                                           (512, 512),
-                                           method=bicubic,
-                                           preserve_aspect_ratio=True)
-        img_rescaled = tf.div(
-            tf.subtract(img_resiz, tf.reduce_min(img_resiz)),
-            tf.subtract(tf.reduce_max(img_resiz), tf.reduce_min(img_resiz)))
+        image = tf.image.resize_images(image,
+                                       (512, 512),
+                                       method=bicubic,
+                                       preserve_aspect_ratio=True)
+        image = tf.cast(image, tf.float32)
+        image = image / 255
+        image = tf.clip_by_value(image, clip_value_min=0, clip_value_max=1)
 
-        return img_rescaled
+        return image
 
     def load_model(self):
         """ load the model VGG19 used to calculate the cost
             and access to the intermediate layers.
 
-        Returns:
+        Saved:
             keras model that takes image inputs and outputs the style and
             content intermediate layers.
+
+        Return: void function
         """
-        vgg = tf.keras.applications.vgg19.VGG19(include_top=False,
-                                                pooling='avg',
-                                                weights='imagenet')
+        vgg_load = tf.keras.applications.vgg19.VGG19(include_top=False,
+                                                     weights='imagenet')
+
+        custom_objects = {'MaxPooling2D': tf.keras.layers.AveragePooling2D}
+        vgg_load.save("base_model")
+
+        vgg = tf.keras.models.load_model("base_model",
+                                         custom_objects=custom_objects)
 
         style_outputs, content_outputs = [], []
         # Get output layers corresponding to style and content layers
@@ -121,7 +127,8 @@ class NST:
 
         model_outputs = style_outputs + content_outputs
         # Build model
-        return tf.keras.models.Model(vgg.input, model_outputs)
+
+        self.model = tf.keras.models.Model(vgg.input, model_outputs)
 
     @staticmethod
     def gram_matrix(input_layer):
@@ -129,7 +136,6 @@ class NST:
         Arg:
          - input_layer: instance of tf.Tensor or tf.Variable of shape
                     (1, h, w, c) with layer.output to calculate gram matrix
-
         Returns: tf.Tensor shape (1, c, c) with gram matrix of input_layer
         """
         if not isinstance(input_layer, (tf.Tensor, tf.Variable)):
@@ -167,12 +173,14 @@ class NST:
         stack_images = tf.concat([style_size, content_img], axis=0)
         m_outputs = self.model(stack_images)
         # Get the style and content feature representations from our model
-        style_features = [self.gram_matrix((
+
+        self.gram_style_features = [self.gram_matrix((
             tf.expand_dims(
                 style_layer[0],
-                axis=0))) for style_layer in m_outputs[:nl_style]]
-        content_features = tf.expand_dims(m_outputs[-1][1], axis=0)
-        return style_features, content_features
+                axis=0)
+        )) for style_layer in m_outputs[:nl_style]]
+
+        self.content_feature = tf.expand_dims(m_outputs[-1][1], axis=0)
 
     def layer_style_cost(self, style_output, gram_target):
         """ calculate the style cost for a single layer
@@ -213,7 +221,8 @@ class NST:
     def style_cost(self, style_outputs):
         """ style cost for generated image
         Arg:
-          - style_outputs: tf.Tensor list style outputs for the generated image
+          - style_outputs: tf.Tensor list style outputs for the generated img
+
         Return: the style cost
         """
         len_style_l = (len(self.style_layers))
@@ -239,6 +248,11 @@ class NST:
 
     def content_cost(self, content_output):
         """ Calculates the content cost for the generated image
+        Arg:
+           - content_output: tf.Tensor with the content out for generated img
+
+        Return:
+          - The content cost
         """
         s = self.content_feature.shape
         if not isinstance(content_output, (tf.Tensor, tf.Variable)):
