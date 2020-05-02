@@ -162,7 +162,7 @@ class NST:
         Returns:
            returns the style features and the content features.
         """
-                nl_style = len(self.style_layers)
+        nl_style = len(self.style_layers)
         # load and process the images: content and style image
         content_img = self.content_image
         h = int(content_img.shape[1])

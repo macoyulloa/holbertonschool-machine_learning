@@ -165,10 +165,10 @@ class NST:
         nl_style = len(self.style_layers)
         # load and process the images: content and style image
         content_img = self.content_image
-        #h = int(content_img.shape[1])
-        #w = int(content_img.shape[2])
+        h = int(content_img.shape[1])
+        w = int(content_img.shape[2])
         style_img = self.style_image
-        #style_img = tf.image.resize_image_with_crop_or_pad(style_img, h, w)
+        style_img = tf.image.resize_image_with_crop_or_pad(style_img, h, w)
         # batch compute content and style features
         vgg19 = tf.keras.applications.vgg19
         content = vgg19.preprocess_input(content_img * 255)
