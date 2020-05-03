@@ -236,14 +236,14 @@ class NST:
                 "style_outputs must be a list with a length of {}".format(
                     len_style_l))
 
-        layers_style_cost = []
-        cost = 1
+        nl_style = len(self.style_layers)
+        weight_style_cost = 1.0 / float(nl_style)
+        cost = 0.0
         for i, output in enumerate(style_outputs):
-            layer_style_cost = self.layer_style_cost(
-                output, self.gram_style_features[i])
-            layers_style_cost.append(layer_style_cost)
-        layers_cost = tf.stack(layers_style_cost, axis=0)
-        cost = tf.math.reduce_prod(layers_cost)
+            cost = cost + (
+                self.layer_style_cost(
+                    output,
+                    self.gram_style_features[i]) * weight_style_cost)
 
         return cost
 
