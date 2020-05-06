@@ -29,10 +29,12 @@ def minor(matrix):
        the minor of a matrix
     """
     shape_col = [len(row) for row in matrix]
+    if not (isinstance(matrix, list)):
+        raise TypeError("matrix must be a list of lists")
     if (isinstance(matrix, list)) and len(matrix) is not 0:
         if not all(isinstance(row, list) for row in matrix):
             raise TypeError("matrix must be a list of lists")
-    else:
+    if len(matrix) is 0:
         raise TypeError("matrix must be a list of lists")
     if matrix == [[]]:
         raise ValueError("matrix must be a non-empty square matrix")
