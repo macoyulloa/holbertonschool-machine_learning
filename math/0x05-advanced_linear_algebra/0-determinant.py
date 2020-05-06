@@ -40,10 +40,11 @@ def determinant(matrix):
         return 1
 
     shape_col = [len(row) for row in matrix]
-    if (isinstance(matrix, list)) and len(matrix) is 0:
+    if (isinstance(matrix, list)) and len(matrix) is not 0:
         if not all(isinstance(row, list) for row in matrix):
             raise TypeError("matrix must be a list of lists")
-
+    else:
+        raise TypeError("matrix must be a list of lists")
     if not all(len(matrix) == col for col in shape_col):
         raise ValueError("matrix must be a square matrix")
 
