@@ -3,7 +3,7 @@
 
 
 def get_determinant_multiD(matrix, total=0):
-    """
+    """ get detemrinant of a multi dimensional array
     """
     columns = list(range(len(matrix)))
     # get the column indices
@@ -49,6 +49,8 @@ def determinant(matrix):
     if len(matrix) == 1:
         return matrix[0][0]
 
-    if len(matrix) >= 2:
-        total = get_determinant_multiD(matrix)
-        return total
+    if len(matrix) == 2:
+        return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0]
+
+    if len(matrix) > 2:
+        return get_determinant_multiD(matrix)
