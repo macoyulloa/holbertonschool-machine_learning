@@ -63,12 +63,12 @@ def get_minor(matrix, i, j):
 
 
 def minor(matrix):
-    """ Calculates the cofactor of the matrix
+    """ Calculates the minor of the matrix
     Arg:
        - matrix: list of lists whose the minor should be calculated
 
     Returns:
-       the cofactor of a matrix
+       the minor of a matrix
     """
     shape_col = [len(row) for row in matrix]
     if (isinstance(matrix, list)) and len(matrix) is not 0:

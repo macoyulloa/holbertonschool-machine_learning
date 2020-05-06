@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" calculate the cofactor of a matrix"""
+""" Linear and Matricial Algebra"""
 
 
 def get_determinant_multiD(matrix, total=0):
@@ -65,7 +65,7 @@ def get_minor(matrix, i, j):
 def cofactor(matrix):
     """ Calculates the cofactor of the matrix
     Arg:
-       - matrix: list of lists whose the minor should be calculated
+       - matrix: list of lists whose the cofactor should be calculated
 
     Returns:
        the cofactor of a matrix
@@ -85,7 +85,7 @@ def cofactor(matrix):
         return [[1]]
 
     if len(matrix) == 2:
-        return [[matrix[1][1], matrix[1][0]], [matrix[0][1], matrix[0][0]]]
+        return [[matrix[1][1], -matrix[1][0]], [-matrix[0][1], matrix[0][0]]]
 
     minors = []
     for row in range(len(matrix)):
