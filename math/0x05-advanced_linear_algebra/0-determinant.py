@@ -22,7 +22,7 @@ def get_determinant_multiD(matrix, total=0):
             copy_matrix[i] = copy_matrix[i][0:col] + copy_matrix[i][col+1:]
         sign = (-1) ** (col % 2)
         # give the sign depends on the position[ij] of the matrix
-        sub_determinant = get_determinant_multiD(copy_matrix, total)
+        sub_determinant = get_determinant_multiD(copy_matrix)
         # do all the sub_deteminants depends on the size of te matrix
         total += sign * matrix[0][col] * sub_determinant
 
@@ -46,11 +46,7 @@ def determinant(matrix):
     if not all(len(matrix) == col for col in shape_col):
         raise ValueError("matrix must be a square matrix")
 
-    if len(matrix) == 1:
+    if len(matrix) == 1 and len(matrix[0]) == 1:
         return matrix[0][0]
 
-    if len(matrix) == 2:
-        return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0]
-
-    if len(matrix) > 2:
-        return get_determinant_multiD(matrix)
+    return get_determinant_multiD(matrix)
