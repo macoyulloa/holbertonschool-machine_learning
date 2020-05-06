@@ -10,14 +10,14 @@ def get_minor(matrix, i, j):
     return [row[:j] + row[j+1:] for row in (matrix[:i] + matrix[i+1:])]
 
 
-def get_matrix_determinant(minor):
+def get_matrix_determinant(matrix):
     """ get the detrminant value of a matrix 2x2 dimensions
 
     Return: the determinant value
     """
     # base case for 2x2 matrix
-    if len(minor) == 2:
-        return (minor[0][0] * minor[1][1] - minor[0][1] * minor[1][0])
+    if len(matrix) == 2:
+        return (matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0])
 
 
 def minor(matrix):
@@ -39,7 +39,7 @@ def minor(matrix):
     if not all(len(matrix) == col for col in shape_col):
         raise ValueError("matrix must be a non-empty square matrix")
 
-    if len(matrix) == 1 and len(matrix[0]) == 1:
+    if len(matrix) == 1:
         return [[1]]
 
     if len(matrix) == 2:
