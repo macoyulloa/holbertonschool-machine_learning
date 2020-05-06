@@ -7,9 +7,8 @@ def get_determinant_multiD(matrix, total=0):
     """
     columns = list(range(len(matrix)))
     # get the column indices
-    if len(matrix) == 2:
-        val = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0]
-        return val
+    if len(matrix) == 2 and len(matrix[0]) == 2:
+        return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0]
 
     for col in columns:
         copy_matrix = [row[:] for row in matrix]
@@ -41,7 +40,10 @@ def determinant(matrix):
         return 1
 
     shape_col = [len(row) for row in matrix]
-    if not any(isinstance(row, list) for row in matrix):
+    if (isinstance(matrix, list)) and len(matrix) is not 0:
+        if not all(isinstance(row, list) for row in matrix):
+            raise TypeError("matrix must be a list of lists")
+    else:
         raise TypeError("matrix must be a list of lists")
     if not all(len(matrix) == col for col in shape_col):
         raise ValueError("matrix must be a square matrix")
