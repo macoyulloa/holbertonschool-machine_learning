@@ -87,15 +87,16 @@ def inverse(matrix):
             return None
         else:
             return [[(1 / matrix[0][0])]]
-    # inversed if the matrix is singular, return None
-    if determinant(matrix) is 0:
-        return None
     # get the factor: 1 / |A|, A is the determinant
-    factor = 1 / determinant(matrix)
+    det = determinant(matrix)
+    # inversed if the matrix is singular, return None
+    if det is 0:
+        return None
+
     # inversed if the matrix is a square 2x2
     if len(matrix) == 2:
         adj = [[matrix[1][1], -matrix[0][1]], [-matrix[1][0], matrix[0][0]]]
-        return [[(adj[i][j] * factor) for j in range(
+        return [[(adj[i][j] / det) for j in range(
             len(matrix))] for i in range(len(matrix[0]))]
 
     coeficients = []
@@ -110,7 +111,7 @@ def inverse(matrix):
             coeficient_row.append(sign * minor)
         coeficients.append(coeficient_row)
     # transversing the coefi matrix and multiply by the factor
-    inversed = [[(coeficients[j][i] * factor) for j in range(
+    inversed = [[(coeficients[j][i] / det) for j in range(
         len(coeficients))] for i in range(len(coeficients[0]))]
 
     return inversed

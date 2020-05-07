@@ -20,15 +20,13 @@ def definiteness(matrix):
         raise TypeError("matrix must be a numpy.ndarray")
     if len(matrix.shape) == 1:
         return None
-    if (matrix.shape[0] != matrix.shape[1]):
+    if not matrix.T == matrix:
         return None
-    if not np.linalg.eig(matrix):
+    if (matrix.shape[0] != matrix.shape[1]):
         return None
 
     w, v = np.linalg.eig(matrix)
 
-    if np.all(w == 0):
-        return None
     if np.all(w > 0):
         return "Positive definite"
     if np.all(w >= 0):
