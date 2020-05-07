@@ -98,7 +98,7 @@ def inverse(matrix):
         return [[(adj[i][j] * factor) for j in range(
             len(matrix))] for i in range(len(matrix[0]))]
 
-    coeficient = []
+    coeficients = []
     # inversed for a multidimensional matrix
     for row in range(len(matrix)):
         coeficient_row = []
@@ -108,9 +108,9 @@ def inverse(matrix):
             sign = (-1) ** (col + row)
             # calculates the coeficient, multiply by the position sign
             coeficient_row.append(sign * minor)
-        coeficient.append(coeficient_row)
+        coeficients.append(coeficient_row)
     # transversing the coefi matrix and multiply by the factor
-    inversed = [[(coeficient[j][i] * factor) for j in range(
-        len(coeficient))] for i in range(len(coeficient[0]))]
+    inversed = [[(coeficients[j][i] * factor) for j in range(
+        len(coeficients))] for i in range(len(coeficients[0]))]
 
     return inversed
