@@ -35,5 +35,6 @@ def definiteness(matrix):
         return "Negative definite"
     if np.all(w <= 0):
         return "Negative semi-definite"
-    else:
+    if np.all(0 < w > 0):
         return "Indefinite"
+    return None
