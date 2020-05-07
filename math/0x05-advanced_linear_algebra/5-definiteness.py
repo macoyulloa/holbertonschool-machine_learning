@@ -20,7 +20,7 @@ def definiteness(matrix):
         raise TypeError("matrix must be a numpy.ndarray")
     if len(matrix.shape) == 1:
         return None
-    if not matrix.T == matrix:
+    if not np.all(matrix.T == matrix):
         return None
     if (matrix.shape[0] != matrix.shape[1]):
         return None
