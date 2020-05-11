@@ -20,12 +20,12 @@ class MultiNormal:
         """
         if (not type(data) == np.ndarray) or (len(data.shape) != 2):
             raise TypeError("data must be a 2D numpy.ndarray")
-        n = data.shape[0]
+        n = data.shape[1]
         if n < 2:
             raise ValueError("data must contain multiple data points")
 
-        d = data.shape[1]
-        self.mean = np.mean(data, axis=0).reshape(d, 1)
+        d = data.shape[0]
+        self.mean = (np.mean(data, axis=1)).reshape(d, 1)
 
-        X = data - mean
-        self.cov = ((np.dot(X.T, X)) / (n - 1))
+        X = data - self.mean
+        self.cov = ((np.dot(X, X.T)) / (n - 1))
