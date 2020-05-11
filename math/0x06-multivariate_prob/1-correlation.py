@@ -21,6 +21,11 @@ def correlation(C):
     if d1 != d2:
         raise ValueError("C must be a 2D square matrix")
 
-    correlation = np.corrcoef(C)
+    variance_x = np.diag(C)
+    desv_x = np.sqrt(variance_x)
+    desv_y = desv_x
+    outer_product = np.outer(desv_x, desv_y)
+
+    correlation = C / outer_product
 
     return correlation
