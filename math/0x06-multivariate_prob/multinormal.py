@@ -42,17 +42,17 @@ class MultiNormal:
         if not type(x) == np.ndarray:
             raise TypeError("x must be a numpy.ndarray")
 
-        d = x.shape[0]
+        d = self.cov.shape[0]
         if (len(x.shape) != 2):
             raise ValueError("x must have the shape ({}, 1)".format(d))
-        if (x.shape[1] != 1):
+        if (x.shape[1] != 1) or (x.shape[0] != d):
             raise ValueError("x must have the shape ({}, 1)".format(d))
 
         x_m = x - self.mean
 
         pdf1 = 1. / (np.sqrt((2 * np.pi)**d * np.linalg.det(self.cov)))
-        pdf2 = float(np.exp(-(np.linalg.solve(self.cov, x_m).T.dot(x_m)) / 2))
+        pdf2 = (np.exp(-(np.linalg.solve(self.cov, x_m).T.dot(x_m)) / 2))
 
         pdf = pdf1 * pdf2
 
-        return (pdf)
+        return float(pdf)
