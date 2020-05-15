@@ -21,10 +21,11 @@ def grads(Y, P):
     n, ndim = Y.shape
 
     Q, num = Q_affinities(Y)
-
-    pq_diff = P - Q  # NxN matrix
-    pq_expanded = np.expand_dims(pq_diff, 2)  #NxNx1
-    y_diffs = np.expand_dims(Y, 1) - np.expand_dims(Y, 0)  #NxNx2
-    dY = 4. * (pq_expanded * y_diffs).sum(1)  #Nx2
+    pq_diff = P - Q
+    pq_diff_num = np.expand_dims((pq_diff * num).T, axis=-1)
+    dY = np.zeros([n, ndim])
+    for i in range(n):
+        Y_diff = Y[i, :] - Y
+        dY[i, :] = np.sum((pq_diff_num[i, :] * Y_diff), axis=0)
 
     return (dY, Q)

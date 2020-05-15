@@ -20,8 +20,8 @@ def Q_affinities(Y):
     sum_Y = np.sum(np.square(Y), axis=1)
     distances = (np.add(np.add(-2 * np.dot(Y, Y.T), sum_Y).T, sum_Y))
 
-    exp_distances = np.exp(-distances)
-    np.fill_diagonal(exp_distances, 0.)
-    Q = exp_distances / np.sum(exp_distances)
+    num = 1. / (1. + distances)
+    np.fill_diagonal(num, 0.)
+    Q = num / np.sum(num)
 
-    return (Q, exp_distances)
+    return (Q, num)
