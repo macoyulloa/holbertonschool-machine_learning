@@ -13,8 +13,5 @@ def cost(P, Q):
     Returns:
       - C, the cost of the transformation
     """
-    i = 1e-12
-    print(i)
-    print(P[:,:] * np.log(P[:,:] / np.maximum(Q[:,:], i)))
-    C = np.sum(P) * (np.log(np.sum(P)) / np.sum(np.minimum(Q, 0)))
+    C = np.sum(P * np.log(np.maximum(P, 1e-12) / np.maximum(Q, 1e-12)))
     return (C)
