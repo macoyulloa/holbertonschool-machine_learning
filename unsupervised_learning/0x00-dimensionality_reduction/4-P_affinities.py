@@ -49,4 +49,6 @@ def P_affinities(X, tol=1e-5, perplexity=30.0):
         P[i, :i] = Pi[:i]
         P[i, i+1:] = Pi[i:]
 
+    P = (P + P.T) / (2*n)
+
     return (P)
