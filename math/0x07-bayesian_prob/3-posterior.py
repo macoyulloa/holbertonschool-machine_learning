@@ -34,7 +34,8 @@ def posterior(x, n, P, Pr):
         raise ValueError("All values in P must be in the range [0, 1]")
     if (np.any((np.vectorize(lambda x: 0 <= x <= 1)(Pr)) is False)):
         raise ValueError("All values in Pr must be in the range [0, 1]")
-    if np.any(np.isclose(Pr, 1)) is False:
+    suma = (np.sum(Pr))
+    if (np.isclose(suma, 1)) is False:
         raise ValueError("Pr must sum to 1")
 
     num = (np.math.factorial(n))
