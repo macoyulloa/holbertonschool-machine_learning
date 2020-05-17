@@ -38,10 +38,6 @@ def posterior(x, n, P, Pr):
     if not (np.isclose(suma, 1)):
         raise ValueError("Pr must sum to 1")
 
-    suma = (np.sum(Pr))
-    if (np.isclose(suma, 1)) is False:
-        raise ValueError("Pr must sum to 1")
-
     num = (np.math.factorial(n))
     den = (np.math.factorial(x) * np.math.factorial(n - x))
     factorial = num / den
