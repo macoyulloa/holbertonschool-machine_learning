@@ -31,6 +31,8 @@ def tsne(X, ndims=2, idims=50, perplexity=30.0, iterations=1000, lr=500):
     X = pca(X, idims)
     Y = np.random.randn(n, ndims)
     iY = np.zeros((n, ndims))
+    gains = np.zeros((n, ndims))
+    min_gain = 0.01
 
     P = P_affinities(X, perplexity)
     # early exageration
@@ -45,14 +47,17 @@ def tsne(X, ndims=2, idims=50, perplexity=30.0, iterations=1000, lr=500):
             momentum = final_momentum
 
         # perform the update
-        iY = momentum * iY + lr * dY
-        Y = Y - iY
+        gains = (gains + 0.2) * ((dY > 0.) != (iY > 0.)) + \
+                (gains * 0.8) * ((dY > 0.) == (iY > 0.))
+        gains[gains < min_gain] = min_gain
+        iY = momentum * iY - lr * (gains * dY)
+        Y = Y + iY
+        Y = Y - np.tile(np.mean(Y, 0), (n, 1))
 
         # print cost of the T SEN model
         if (i + 1) % 100 == 0:
             C = cost(P, Q)
             print("Cost at iteration {}: {}".format((i+1), C))
-
         # perform the aerly exagerations for first 100 iterations
         if (i + 1) == 100:
             P = P / 4
