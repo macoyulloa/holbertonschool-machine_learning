@@ -18,8 +18,23 @@ def expectation(X, pi, m, S):
             probabilities for each data point in each cluster
         - l: is the total log likelihood
     """
-    n, _ = X.shape
-    k = m.shape[0]
+    if not isinstance(X, np.ndarray) or len(X.shape) != 2:
+        return None, None
+    if not isinstance(pi, np.ndarray) or len(pi.shape) != 1:
+        return None, None
+    if not isinstance(m, np.ndarray) or len(m.shape) != 2:
+        return None, None
+    if not isinstance(S, np.ndarray) or len(S.shape) != 3:
+        return None, None
+
+    n, d = X.shape
+    k = pi.shape[0]
+
+    if d != m.shape[1] or d != S.shape[1] or d != S.shape[2]:
+        return None, None
+    if k != m.shape[0] or k != S.shape[0] or k > n:
+        return None, None
+
     gauss_p = np.zeros((k, n))
 
     # iterate each poiint per each k, cluster
