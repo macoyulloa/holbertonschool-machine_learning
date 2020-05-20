@@ -37,11 +37,11 @@ def kmeans(X, k, iterations=1000):
             # group of x's per cluster
             for k in range(C.shape[0]):
                 # if not found any x of the centroid need to be reinitialized
-                if (X[clss==k].size == 0):
+                if (X[clss == k].size == 0):
                     C[k, :] = np.random.uniform(X_min, X_max, size=(1, d))
                 # look after the group of x's of each cluster per centroid
                 else:
-                    C[k, :] = (X[clss==k].mean(axis=0))
+                    C[k, :] = (X[clss == k].mean(axis=0))
             # if there is not change in the centroids breaks the cycle
             if (C_copy == C).all():
                 break

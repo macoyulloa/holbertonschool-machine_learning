@@ -6,7 +6,8 @@ import numpy as np
 def initialize(X, k):
     """ initializes cluster centroids for K-means:
     Arg:
-        - X: np.ndarray shape (n, d) dataset that will be used for K-means clustering
+        - X: np.ndarray shape (n, d) dataset that will be used
+             for K-means clustering
             - n number of data points
             - d number of dimensions for each data point
         - k is a positive integer containing the number of clusters
