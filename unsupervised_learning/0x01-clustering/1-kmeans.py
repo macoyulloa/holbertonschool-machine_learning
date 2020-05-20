@@ -49,8 +49,9 @@ def kmeans(X, k, iterations=1000):
                 # look after the group of x's of each cluster per centroid
             else:
                 C[k, :] = (X[clss == k].mean(axis=0))
-            # if there is not change in the centroids breaks the cycle
-            if (C_copy == C).all():
-                break
+                # if there is not change in the centroids breaks the cycle
+
+        if (C_copy == C).all():
+            break
 
     return (C, clss)
