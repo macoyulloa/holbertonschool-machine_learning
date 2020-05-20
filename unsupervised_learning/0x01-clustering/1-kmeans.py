@@ -52,6 +52,6 @@ def kmeans(X, k, iterations=1000):
                 # if there is not change in the centroids breaks the cycle
 
         if (C_copy == C).all():
-            break
+            return (C, clss)
 
     return (C, clss)
