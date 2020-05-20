@@ -22,14 +22,12 @@ def expectation(X, pi, m, S):
     k = m.shape[0]
     gauss_p = np.zeros((k, n))
 
+    # iterate each poiint per each k, cluster
     for i in range(k):
-        mi = m[i, :]
-        Si = S[i, :, :]
-        P = pdf(X, mi, Si)
-        print(P)
-        gauss_p[i, :] = P * pi[i]
+        P = pdf(X, m[i], S[i])
+        gauss_p[i] = P * pi[i]
+        # g_sum += gauss_p
+    g = gauss_p / np.sum(gauss_p, axis=0)
+    log_likelihood = np.sum(np.log(np.sum(gauss_p, axis=0)))
 
-    g = gauss_p / np.sum(gauss_p)
-    l = np.sum(np.log(gauss_p))
-
-    return (g, l)
+    return (g, log_likelihood)

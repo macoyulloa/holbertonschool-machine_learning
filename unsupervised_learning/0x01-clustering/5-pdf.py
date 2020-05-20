@@ -16,18 +16,16 @@ def pdf(X, m, S):
         - P: np.ndarray shape (n,) with the PDF values for each data point
                 All values in P should have a minimum value of 1e-300
     """
-
     n, d = X.shape
     X_m = X - m
     # covariance matrix inverted
-    # S_inv = np.linalg.inv(S)
+    S_inv = np.linalg.inv(S)
 
     part1 = 1. / (np.sqrt(((2 * np.pi)**d * np.linalg.det(S))))
     # This einsum call calculates (x-m)T * S * (x-m) in a vectorized
     # way across all the input variables.
-    fac = np.einsum('...k,kl,...l->...', X_m, (np.linalg.inv(S)), X_m)
+    fac = np.einsum('...k,kl,...l->...', X_m, S_inv, X_m)
     part2 = np.exp(-fac / 2)
     P = part1 * part2
     P = np.maximum(P, 1e-300)
     return (P)
-
