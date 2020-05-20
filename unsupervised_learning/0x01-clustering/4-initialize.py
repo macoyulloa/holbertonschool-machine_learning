@@ -24,7 +24,7 @@ def initialize(X, k):
         pi = np.repeat(1/k, k)
         m, _ = kmeans(X, k)
         S = np.tile(np.identity(d), (k, 1))
-        S= np.reshape(S, (k, d, d))
+        S = np.reshape(S, (k, d, d))
         return (pi, m, S)
 
     except Exception:
