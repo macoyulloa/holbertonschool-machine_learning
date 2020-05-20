@@ -19,13 +19,14 @@ def initialize(X, k):
         - S: np.ndarray shape (k, d, d) containing the covariance
                 matrices for each cluster, identity matrices
     """
-    try:
-        _, d = X.shape
-        pi = np.repeat(1/k, k)
-        m, _ = kmeans(X, k)
-        S = np.tile(np.identity(d), (k, 1))
-        S = np.reshape(S, (k, d, d))
-        return (pi, m, S)
+    if not isinstance(X, np.ndarray) or len(X.shape) != 2:
+        return None, None, None
+    if type(k) != int or k <= 0 or X.shape[0] <= k:
+        return None, None, None
 
-    except Exception:
-        return (None, None, None)
+    _, d = X.shape
+    pi = np.repeat(1/k, k)
+    m, _ = kmeans(X, k)
+    S = np.tile(np.identity(d), (k, 1))
+    S = np.reshape(S, (k, d, d))
+    return (pi, m, S)
