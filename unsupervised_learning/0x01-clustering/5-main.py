@@ -10,3 +10,10 @@ if __name__ == '__main__':
     X = np.random.multivariate_normal(m, S, 10000)
     P = pdf(X, m, S)
     print(P)
+
+    np.random.seed(0)
+    m = np.array([12, 30])
+    S = np.array([[36, -30], [-30, 100]])
+    X = np.random.multivariate_normal(m, S, 10000)
+    P = pdf(X, m, S)
+    print(P)

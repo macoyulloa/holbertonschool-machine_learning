@@ -1,0 +1,33 @@
+#!/usr/bin/env python3
+" Clustering: k-means and Gaussian Mixture Model & EM technique "
+
+import numpy as np
+
+
+def pdf(X, m, S):
+    """ calculates the probability density function of a Gaussian distri
+    Arg:
+        - X: np.ndarray of shape (n, d) containing the data points
+                whose PDF should be evaluated
+        - m: np.ndarray of shape (d,) with the mean of the distribution
+        - S: np.ndarray of shape (d, d) with the covariance of the distri
+
+    Returns: (P), or (None) on failure
+        - P: np.ndarray shape (n,) with the PDF values for each data point
+                All values in P should have a minimum value of 1e-300
+    """
+
+    n, d = X.shape
+    X_m = X - m
+    # covariance matrix inverted
+    # S_inv = np.linalg.inv(S)
+
+    part1 = 1. / (np.sqrt(((2 * np.pi)**d * np.linalg.det(S))))
+    # This einsum call calculates (x-m)T * S * (x-m) in a vectorized
+    # way across all the input variables.
+    fac = np.einsum('...k,kl,...l->...', X_m, (np.linalg.inv(S)), X_m)
+    part2 = np.exp(-fac / 2)
+    P = part1 * part2
+    P = np.maximum(P, 1e-300)
+    return (P)
+

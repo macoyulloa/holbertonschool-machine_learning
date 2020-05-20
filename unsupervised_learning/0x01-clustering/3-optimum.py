@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+" Clustering: k-means and Gaussian Mixture Model & EM technique "
 
 import numpy as np
 kmeans = __import__('1-kmeans').kmeans
