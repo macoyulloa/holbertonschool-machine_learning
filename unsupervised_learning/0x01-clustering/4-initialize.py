@@ -25,7 +25,7 @@ def initialize(X, k):
         return None, None, None
 
     _, d = X.shape
-    pi = np.repeat(1/k, k)
+    pi = np.repeat((1/k,), k)
     m, _ = kmeans(X, k)
     S = np.tile(np.identity(d), (k, 1))
     S = np.reshape(S, (k, d, d))
