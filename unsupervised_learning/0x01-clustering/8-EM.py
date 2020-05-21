@@ -8,7 +8,7 @@ maximization = __import__('7-maximization').maximization
 
 
 def expectation_maximization(X, k, iterations=1000, tol=1e-5,
-                            verbose=False):
+                             verbose=False):
     """ performs the expectation maximization for a GMM:
     Arg:
         - X: np.ndarray shape (n, d) containing the data set
@@ -43,22 +43,22 @@ def expectation_maximization(X, k, iterations=1000, tol=1e-5,
     if type(verbose) != bool:
         return None, None, None, None, None
 
+    pi, m, S = initialize(X, k)
     l_past = 0
 
     for i in range(iterations):
-        pi, m, S = initialize(X, k)
-        g, l = expectation(X, pi, m, S)
+        g, log_l = expectation(X, pi, m, S)
         pi, m, S = maximization(X, g)
 
-        if (verbose == True):
+        if (verbose is True):
             if (i % 10 == 0) or (i == 0):
                 print("Log Likelihood after {} iterations: {}".format(
-                    i, l))
+                    i, log_l))
         if abs(l - l_past) <= tol:
             print("Log Likelihood after {} iterations: {}".format(
-                i, l))
+                i, log_l))
             break
 
-        l_past = l
+        l_past = log_l
 
-    return (pi, m, S, g, l)
+    return (pi, m, S, g, log_l)
