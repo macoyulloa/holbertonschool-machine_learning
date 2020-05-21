@@ -35,11 +35,11 @@ Function `def expectation(X, pi, m, S):` that calculates the expectation step 
 
 Function `def maximization(X, g):` that calculates the maximization step in the EM algorithm for a GMM
 
-#### 8\. EM mandatory
+#### 8\. EM
 
 Function `def expectation_maximization(X, k, iterations=1000, tol=1e-5, verbose=False):` that performs the expectation maximization for a GMM
 
-#### 9\. BIC mandatory
+#### 9\. BIC
 
 Function `def BIC(X, kmin=1, kmax=None, iterations=1000, tol=1e-5, verbose=False):` that finds the best number of clusters for a GMM using the Bayesian Information Criterion
 
