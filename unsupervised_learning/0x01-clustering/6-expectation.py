@@ -26,15 +26,17 @@ def expectation(X, pi, m, S):
         return None, None
     if not isinstance(S, np.ndarray) or len(S.shape) != 3:
         return None, None
-    if np.sum(pi) != 1:
+    if not np.isclose([np.sum(pi)], [1])[0]:
         return None, None
 
     n, d = X.shape
     k = pi.shape[0]
 
+    if k > n:
+        return None, None
     if d != m.shape[1] or d != S.shape[1] or d != S.shape[2]:
         return None, None
-    if k != m.shape[0] or k != S.shape[0] or k > n:
+    if k != m.shape[0] or k != S.shape[0]:
         return None, None
 
     gauss_p = np.zeros((k, n))
