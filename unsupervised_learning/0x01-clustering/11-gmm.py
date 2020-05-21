@@ -20,12 +20,12 @@ def gmm(X, k):
         - bic: np.ndarray of shape (kmax - kmin + 1) containing the
                 BIC value for each cluster size tested
     """
-    g_mixture = sklearn.mixture.GaussianMixture(k)
-    clss = g_mixture.fit_predict(X)
+    g_mixture = sklearn.mixture.GaussianMixture(n_components=k)
+    g = g_mixture.fit(X)
+    m = g.means_
+    S = g.covariances_
+    pi = g.weights_
+    clss = g_mixture.predict(X)
     bic = g_mixture.bic(X)
-    g_mixture.fit(X)
-    m = g_mixture.means_
-    S = g_mixture.covariances_
-    pi = g_mixture.weights_
 
     return (pi, m, S, clss, bic)
