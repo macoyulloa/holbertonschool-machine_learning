@@ -51,12 +51,16 @@ def expectation_maximization(X, k, iterations=1000, tol=1e-5,
         pi, m, S = maximization(X, g)
 
         if (verbose is True):
+            if abs(log_l - l_past) <= tol:
+                print("Log Likelihood after {} iterations: {}".format(
+                    i, log_l))
+                break
+
             if (i % 10 == 0) or (i == 0):
                 print("Log Likelihood after {} iterations: {}".format(
                     i, log_l))
-        if abs(l - l_past) <= tol:
-            print("Log Likelihood after {} iterations: {}".format(
-                i, log_l))
+
+        if abs(log_l - l_past) <= tol:
             break
 
         l_past = log_l
