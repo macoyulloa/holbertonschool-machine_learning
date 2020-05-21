@@ -34,12 +34,12 @@ def maximization(X, g):
 
     for i in range(k):
         # maximization updating the mean per each cluster
-        m_num = np.sum((g[i,:,np.newaxis] * X), axis=0)
+        m_num = np.sum((g[i, :, np.newaxis] * X), axis=0)
         m_den = np.sum(g[i], axis=0)
-        m[i] =  m_num / m_den
+        m[i] = m_num / m_den
         # maxization updating of the covarianze matrixes per cluster
         s_num = np.dot(g[i] * (X - m[i]).T, (X - m[i]))
-        S[i] =  s_num / np.sum(g[i])
+        S[i] = s_num / np.sum(g[i])
         # maximization updating of the prior per each cluster, k
         pi[i] = np.sum(g[i]) / n
 
