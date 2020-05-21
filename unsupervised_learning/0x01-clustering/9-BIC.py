@@ -54,13 +54,13 @@ def BIC(X, kmin=1, kmax=None, iterations=1000, tol=1e-5,
     k_results, results, l_totals, b_totals = [], [], [], []
     n, d = X.shape
     for k in range(kmin, kmax + 1):
-        pi, m, S, g, l = expectation_maximization(
+        pi, m, S, g, log_l = expectation_maximization(
             X, k, iterations, tol, verbose)
         k_results.append(k)
         results.append((pi, m, S))
-        l_totals.append(l)
+        l_totals.append(log_l)
         p = (k * d * (d + 1) / 2) + (d * k) + k - 1
-        bic = p * np.log(n) - 2 * l
+        bic = p * np.log(n) - 2 * log_l
         b_totals.append(bic)
     b_totals = np.asarray(b_totals)
     best_b = np.argmin(b_totals)
