@@ -18,11 +18,15 @@ def variance(X, C):
     if not isinstance(C, np.ndarray) or len(X.shape) != 2:
         return None
 
-    n, d = X.shape
+    try:
+        n, d = X.shape
 
-    distances = np.sqrt(((X - C[:, np.newaxis])**2).sum(axis=-1))
-    # selectin the minimun distances depends on the number of
-    # clusters, K
-    min_distances = np.min(distances, axis=0)
-    var = np.sum(min_distances ** 2)
-    return var
+        distances = np.sqrt(((X - C[:, np.newaxis])**2).sum(axis=-1))
+        # selectin the minimun distances depends on the number of
+        # clusters, K
+        min_distances = np.min(distances, axis=0)
+        var = np.sum(min_distances ** 2)
+        return var
+
+    except Exception:
+        return None
