@@ -23,7 +23,7 @@ def kmeans(X, k, iterations=1000):
         return None, None
     if type(k) != int or k <= 0 or k >= X.shape[0]:
         return None, None
-    if type(iterations) != int or iterations <= 0:
+    if not isinstance(iterations, (int, float)) or iterations <= 0:
         return None, None
 
     n, d = X.shape
