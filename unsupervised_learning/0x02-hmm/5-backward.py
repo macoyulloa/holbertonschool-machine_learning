@@ -52,13 +52,21 @@ def backward(Observation, Emission, Transition, Initial):
         return (None, None)
 
     B = np.zeros((N, T))
-    B[N - 1] = np.ones((T))
+    B[:, T - 1] += 1
+    print(B[:, T-1])
 
-    for t in range(T - 2, 0, -1):
-        for n in range(N):
-            B[n, t] = (B[:, t + 1] * Emission[:, Observation[t + 1]]
-                       ).dot((Transition[:, n]))
+    # for t in range(T - 2, -1, -1):
+    #    for n in range(N):
+    #        B[n, t] = (B[:, t + 1] * Emission[:, Observation[t + 1]]
+    #                   ).dot((Transition[:, n]))
 
-    P = np.sum(B)
+    for t in range(T - 2, -1, -1):
+        B[:, t] = (B[:, t + 1] * (Transition[:, :])
+                   ).dot(Emission[:, Observation[t + 1]])
+
+    # F[:, 0] = Initial.T * Emission[:, Observation[0]]
+    B[:, 0] = B[:, 0] * Initial.T * Emission[:, Observation[0]]
+
+    P = np.sum(B[:, 0])
 
     return (P, B)
