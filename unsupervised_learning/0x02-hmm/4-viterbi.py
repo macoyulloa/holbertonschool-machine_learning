@@ -59,10 +59,10 @@ def viterbi(Observation, Emission, Transition, Initial):
                          Emission[np.newaxis, :, Observation[t]].T, 1)
         prev[:, t] = np.argmax(F[:, t - 1] * Transition[:, :].T, 1)
 
-    # Path Array
-    path = [0 for i in range(T)]
+    # Path Array, creating the path array of size T
+    path = [0] * T
     # Find the most probable last hidden state
-    path[-1] = np.argmax(F[:, 0])
+    path[-1] = np.argmax(F[:, T - 1])
     for i in range(T - 1, 0, -1):
         backtrack_index = prev[path[i], i]
         path[i - 1] = int(backtrack_index)
