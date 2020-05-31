@@ -51,14 +51,22 @@ def viterbi(Observation, Emission, Transition, Initial):
         return (None, None)
 
     F = np.zeros((N, T))
-    path = []
+    prev = np.zeros((N, T))
     F[:, 0] = Initial.T * Emission[:, Observation[0]]
 
     for t in range(1, T):
-        for n in range(N):
-            F[n, t] = (F[:, t-1].dot(Transition[:, n])) * \
-                Emission[n, Observation[t]]
-    path = np.max(F, axis=0)
-    P = np.sum(path)
+        F[:, t] = np.max((F[:, t - 1] * (Transition[:, :].T)) *
+                         Emission[np.newaxis, :, Observation[t]].T, 1)
+        prev[:, t] = np.argmax(F[:, t - 1] * Transition[:, :].T, 1)
 
+    # Path Array
+    path = [0 for i in range(T)]
+    # Find the most probable last hidden state
+    path[-1] = np.argmax(F[:, 0])
+    for i in range(T - 1, 0, -1):
+        backtrack_index = prev[path[i], i]
+        path[i - 1] = int(backtrack_index)
+
+    P = np.amax(F, axis=0)
+    P = np.amin(P)
     return (path, P)
