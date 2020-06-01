@@ -25,6 +25,9 @@ pip install --user pillow
 pip install --user opencv-python
 pip install --user scikit-learn==0.21
 pip install --user scipy==1.3
+# pick Hyperparameters modules
+pip install --user GPy
+pip install --user gpyopt
 
 #  installing tensorflow
 pip install --user tensorflow==1.12
