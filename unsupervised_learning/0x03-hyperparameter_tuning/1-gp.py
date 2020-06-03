@@ -41,7 +41,7 @@ class GaussianProcess():
         """
         sqdist = (np.sum(X1**2, 1).reshape(-1, 1)) + \
             (np.sum(X2**2, 1)) - (2 * np.dot(X1, X2.T))
-        return np.exp(-1/2 * sqdist)
+        return (self.sigma_f**2) * (np.exp(-1/(2 * (self.l**2)) * sqdist))
 
     def predict(self, X_s):
         """ predicts the mean and standard desv of a points in GP
@@ -57,3 +57,15 @@ class GaussianProcess():
             - sigma: np.ndarray of shape (s,) with the standard
                     desviation for each point in X_s, respectively
         """
+        # mu = L.dot(np.random.randn(*Y.shape))
+        # var = np.abs(L.dot(np.random.randn(*Y.shape))) + 0.01
+        K_inv = np.linalg.inv(self.K)
+        K_s = self.kernel(self.X, X_s)
+        K_ss = self.kernel(X_s, X_s)
+
+        mu_s = K_s.T.dot(K_inv).dot(self.Y)
+        mu_s = np.reshape(mu_s, -1)
+        cov_s = K_ss - K_s.T.dot(K_inv).dot(K_s)
+        sigma_s = np.diagonal(cov_s)
+
+        return mu_s, sigma_s

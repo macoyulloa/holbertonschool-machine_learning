@@ -39,9 +39,48 @@ class GaussianProcess():
 
         Returns: covariance kernel matrix as a np.ndarray of shape (m, n)
         """
-        # kernel = GPy.kern.RBF(
-        #    input_dim=1, variance=self.sigma_f**2, lengthscale=self.l)
-        # return kernel.K(X1, X2)
         sqdist = (np.sum(X1**2, 1).reshape(-1, 1)) + \
             (np.sum(X2**2, 1)) - (2 * np.dot(X1, X2.T))
         return (self.sigma_f**2) * (np.exp(-1/(2 * (self.l**2)) * sqdist))
+
+    def predict(self, X_s):
+        """ predicts the mean and standard desv of a points in GP
+
+        Arg:
+        - X_s: is a numpy.ndarray of shape (s, 1) with all of the points
+            whose mean and standard deviation should be calculated
+            - s: is the number of sample points
+
+        Returns: mu, sigma
+            - mu: np.ndarray of shape (s,) containing the mean for
+                    each point in X_s, respectively
+            - sigma: np.ndarray of shape (s,) with the standard
+                    desviation for each point in X_s, respectively
+        """
+        # mu = L.dot(np.random.randn(*Y.shape))
+        # var = np.abs(L.dot(np.random.randn(*Y.shape))) + 0.01
+        K_inv = np.linalg.inv(self.K)
+        K_s = self.kernel(self.X, X_s)
+        K_ss = self.kernel(X_s, X_s)
+
+        mu_s = K_s.T.dot(K_inv).dot(self.Y)
+        mu_s = np.reshape(mu_s, -1)
+        cov_s = K_ss - K_s.T.dot(K_inv).dot(K_s)
+        sigma_s = np.diagonal(cov_s)
+
+        return mu_s, sigma_s
+
+    def update(self, X_new, Y_new):
+        """ updates a Gaussian Process:
+
+        Arg:
+            - X_new: is a numpy.ndarray of shape (1,) that represents
+                    the new sample point
+            - Y_new: is a numpy.ndarray of shape (1,) that represents
+                    the new sample function value
+
+        Updates the public instance attributes X, Y, and K
+        """
+        self.X = np.concatenate((self.X, X_new[:, np.newaxis]), axis=0)
+        self.Y = np.concatenate((self.Y, Y_new[:, np.newaxis]), axis=0)
+        self.K = self.kernel(self.X, self.X)
