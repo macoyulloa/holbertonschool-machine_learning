@@ -44,6 +44,7 @@ class BayesianOptimization():
         self.X_s = np.random.uniform(bounds[0], bounds[1], (ac_samples, 1))
         self.xsi = xsi
         self.minimize = minimize
+        self.X = X_init
 
     def acquisition(self):
         """ calculates the next best sample location.
@@ -55,3 +56,23 @@ class BayesianOptimization():
             - EI: is a numpy.ndarray of shape (ac_samples,) containing
                     the expected improvement of each potential sample
         """
+        mu_sample, sigma_sample = self.gp.predict(self.X_s)
+        # sigma = sigma.reshape(-1, 1)
+        # print(sigma.shape)
+        # Needed for noise-based model,
+        # otherwise use np.max(Y_sample).
+        mu_sample_opt = np.max(mu_sample)
+        # mu_x, sigma_x = self.gp.predict(self.X_s[np.argmax(mu_sample_opt)])
+
+        with np.errstate(divide='warn'):
+            imp = mu_sample - mu_sample_opt - self.xsi
+            Z = imp / sigma_sample
+            part1 = (imp * norm.cdf(Z))
+            print(part1.shape)
+            part2 = (sigma_sample * norm.pdf(Z))
+            print(part2.shape)
+            ei = part1 + part2
+            print(ei.shape)
+            ei[sigma_sample == 0.0] = 0.0
+
+        return 1, ei
