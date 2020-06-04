@@ -57,15 +57,19 @@ class BayesianOptimization():
                     the expected improvement of each potential sample
         """
         mu_sample, sigma_sample = self.gp.predict(self.X_s)
+        Y_sample = self.f(self.X_s)
         # sigma = sigma.reshape(-1, 1)
         # print(sigma.shape)
         # Needed for noise-based model,
         # otherwise use np.max(Y_sample).
-        mu_sample_opt = np.max(mu_sample)
+        if self.minimize == True:
+            Y_sample_opt = np.min(Y_sample)
+        else:
+            Y_sample_opt = np.max(Y_sample)
         # mu_x, sigma_x = self.gp.predict(self.X_s[np.argmax(mu_sample_opt)])
 
         with np.errstate(divide='warn'):
-            imp = mu_sample - mu_sample_opt - self.xsi
+            imp = mu_sample - Y_sample_opt - self.xsi
             Z = imp / sigma_sample
             part1 = (imp * norm.cdf(Z))
             print(part1.shape)
@@ -75,4 +79,6 @@ class BayesianOptimization():
             print(ei.shape)
             ei[sigma_sample == 0.0] = 0.0
 
-        return 1, ei
+        X_next = self.X_s[np.argmax(ei)]
+
+        return (X_next, ei)
