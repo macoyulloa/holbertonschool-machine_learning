@@ -92,6 +92,7 @@ class BayesianOptimization():
         Y_s = self.f(self.X_s)
 
         for i in range(iterations):
+            self.gp.fit(self.X_s, Y_s)
             X_opt, EI = self.acquisition()
             Y_opt = self.f(X_opt)
             if np.any(self.X_s == X_opt):
