@@ -41,10 +41,10 @@ class BayesianOptimization():
         """
         self.f = f
         self.gp = GP(X_init, Y_init, l=l, sigma_f=sigma_f)
-        self.X_s = np.random.uniform(bounds[0], bounds[1], (ac_samples, 1))
+        X_s = np.linspace(bounds[0], bounds[1], num=ac_samples)
+        self.X_s = X_s.reshape(-1, 1)
         self.xsi = xsi
         self.minimize = minimize
-        self.X = X_init
 
     def acquisition(self):
         """ calculates the next best sample location.
@@ -57,26 +57,22 @@ class BayesianOptimization():
                     the expected improvement of each potential sample
         """
         mu_sample, sigma_sample = self.gp.predict(self.X_s)
-        Y_sample = self.f(self.X_s)
-        # sigma = sigma.reshape(-1, 1)
-        # print(sigma.shape)
-        # Needed for noise-based model,
-        # otherwise use np.max(Y_sample).
-        if self.minimize == True:
-            Y_sample_opt = np.min(Y_sample)
-        else:
-            Y_sample_opt = np.max(Y_sample)
-        # mu_x, sigma_x = self.gp.predict(self.X_s[np.argmax(mu_sample_opt)])
 
-        with np.errstate(divide='warn'):
+        # Needed for noise-based model,
+        # Depends if need to max or min the funtion
+        if self.minimize == True:
+            Y_sample_opt = np.min(mu_sample)
+            imp = Y_sample_opt - mu_sample - self.xsi
+        else:
+            Y_sample_opt = np.max(mu_sample)
             imp = mu_sample - Y_sample_opt - self.xsi
+        # getting the Expected Improvement acquisition function takking
+        # in account that when sigma_sample is 0 the ei needs to be 0
+        with np.errstate(divide='warn'):
             Z = imp / sigma_sample
             part1 = (imp * norm.cdf(Z))
-            print(part1.shape)
             part2 = (sigma_sample * norm.pdf(Z))
-            print(part2.shape)
             ei = part1 + part2
-            print(ei.shape)
             ei[sigma_sample == 0.0] = 0.0
 
         X_next = self.X_s[np.argmax(ei)]
