@@ -60,15 +60,15 @@ class BayesianOptimization():
 
         # Needed for noise-based model,
         # Depends if need to max or min the funtion
-        if self.minimize == True:
-            Y_sample_opt = np.min(mu_sample)
+        if self.minimize is True:
+            Y_sample_opt = np.min(self.gp.Y)
             imp = Y_sample_opt - mu_sample - self.xsi
         else:
-            Y_sample_opt = np.max(mu_sample)
+            Y_sample_opt = np.max(self.gp.Y)
             imp = mu_sample - Y_sample_opt - self.xsi
         # getting the Expected Improvement acquisition function takking
         # in account that when sigma_sample is 0 the ei needs to be 0
-        with np.errstate(divide='warn'):
+        with np.errstate(divide='ignore'):
             Z = imp / sigma_sample
             part1 = (imp * norm.cdf(Z))
             part2 = (sigma_sample * norm.pdf(Z))
@@ -94,14 +94,18 @@ class BayesianOptimization():
             - Y_opt: is a numpy.ndarray of shape (1,) representing the
                     optimal function value
         """
-        Y_s = self.f(self.X_s)
-
+        X_sample = []
         for i in range(iterations):
-            self.gp.fit(self.X_s, Y_s)
-            X_opt, EI = self.acquisition()
+            X_opt, _ = self.acquisition()
+            if X_opt in X_sample:
+                break
             Y_opt = self.f(X_opt)
-            if np.any(self.X_s == X_opt):
-                return (X_opt, Y_opt)
             self.gp.update(X_opt, Y_opt)
+            X_sample.append(X_opt)
 
-        return (X_opt, Y_opt)
+        if self.minimize is True:
+            idx = np.argmin(self.gp.Y)
+        else:
+            idx = np.argmax(self.gp.Y)
+
+        return self.gp.X[idx], self.gp.Y[idx]

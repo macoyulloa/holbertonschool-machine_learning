@@ -60,11 +60,11 @@ class BayesianOptimization():
 
         # Needed for noise-based model,
         # Depends if need to max or min the funtion
-        if self.minimize == True:
-            Y_sample_opt = np.min(mu_sample)
+        if self.minimize is True:
+            Y_sample_opt = np.min(self.gp.Y)
             imp = Y_sample_opt - mu_sample - self.xsi
         else:
-            Y_sample_opt = np.max(mu_sample)
+            Y_sample_opt = np.max(self.gp.Y)
             imp = mu_sample - Y_sample_opt - self.xsi
         # getting the Expected Improvement acquisition function takking
         # in account that when sigma_sample is 0 the ei needs to be 0
