@@ -76,6 +76,5 @@ class BayesianOptimization():
             ei[sigma_sample == 0.0] = 0.0
 
         X_next = self.X_s[np.argmax(ei)]
-        print(ei.shape)
 
         return (X_next, ei)
