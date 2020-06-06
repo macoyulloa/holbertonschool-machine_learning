@@ -68,7 +68,7 @@ class BayesianOptimization():
             imp = mu_sample - Y_sample_opt - self.xsi
         # getting the Expected Improvement acquisition function takking
         # in account that when sigma_sample is 0 the ei needs to be 0
-        with np.errstate(divide='warn'):
+        with np.errstate(divide='ignore'):
             Z = imp / sigma_sample
             part1 = (imp * norm.cdf(Z))
             part2 = (sigma_sample * norm.pdf(Z))
@@ -76,5 +76,6 @@ class BayesianOptimization():
             ei[sigma_sample == 0.0] = 0.0
 
         X_next = self.X_s[np.argmax(ei)]
+        print(ei.shape)
 
         return (X_next, ei)
