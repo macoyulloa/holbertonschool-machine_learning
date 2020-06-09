@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 
 
+###################################################
+# SETTING UP THE ENVIRONMENT FOR MACHINE LEARNING #
+###################################################
+
+
 # update and installs
 sudo apt-get update
 sudo apt-get install python3-tk
