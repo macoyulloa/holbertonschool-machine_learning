@@ -3,7 +3,7 @@
 import tensorflow.keras as K
 
 
-def autoencoder(input_dims, hidden_layers, latent_dims):
+def sparse(input_dims, hidden_layers, latent_dims, lambtha):
     """that creates an autoencoder:
 
     Arg:
@@ -12,6 +12,8 @@ def autoencoder(input_dims, hidden_layers, latent_dims):
                         hidden layer in the encoder, respectively
         - latent_dims: is an integer containing the dimensions of the latent
                     space representation
+        - lambtha is the regularization parameter used for L1 regularization
+                    on the encoded output
 
     Returns: encoder, decoder, auto
         - encoder: is the encoder model
@@ -28,8 +30,10 @@ def autoencoder(input_dims, hidden_layers, latent_dims):
         else:
             encoded = K.layers.Dense(layer, activation='relu')(encoded)
     # the botneckle layer
-    botneckle = K.layers.Dense(latent_dims, activation='relu')(encoded)
-    # encoder: compressing the input until the botneckle, encoded repr
+    botneckle = K.layers.Dense(
+        latent_dims, activation='relu',
+        activity_regularizer=K.regularizers.l1(lambtha))(encoded)
+    # encoder: compressing the input until the botneckle, encoded repres
     encoder = K.models.Model(input_img, botneckle)
 
     # decoded part of the model
