@@ -5,8 +5,8 @@ from tensorflow.keras.datasets import mnist
 import numpy as np
 import matplotlib.pyplot as plt
 
+autoencoder = __import__('1-sparse').sparse
 
-autoencoder = __import__('1-sparse').autoencoder
 
 (x_train, _), (x_test, _) = mnist.load_data()
 x_train = x_train.astype('float32') / 255.
@@ -24,9 +24,9 @@ reconstructed = decoder.predict(encoded)
 
 for i in range(10):
     ax = plt.subplot(2, 10, i + 1)
-    ax.axes('off')
+    ax.axis('off')
     plt.imshow(x_test[i].reshape((28, 28)))
     ax = plt.subplot(2, 10, i + 11)
-    ax.axes('off')
+    ax.axis('off')
     plt.imshow(reconstructed[i].reshape((28, 28)))
 plt.show()
