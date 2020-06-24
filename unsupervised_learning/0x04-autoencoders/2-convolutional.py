@@ -34,40 +34,43 @@ def autoencoder(input_dims, filters, latent_dims):
                               activation='relu')(input_img)
     encoded_pool = K.layers.MaxPooling2D(pool_size=[2, 2])(encoded)
 
-    for i in range(1, len(filters)):
+    for i in range(1, len(filters)-1):
         encoded = K.layers.Conv2D(filters=filters[i], kernel_size=3,
-                                  padding='same',
+                                  padding='valid',
                                   activation='relu')(encoded_pool)
         encoded_pool = K.layers.MaxPooling2D(pool_size=[2, 2])(encoded)
+
     # the botneckle layer, the latent space
-    flatten = K.layers.Flatten()(encoded_pool)
-    latent = K.layers.Dense(latent_dims)(flatten)
+    encoded = K.layers.Conv2D(filters=filters[i], kernel_size=3,
+                              padding='valid',
+                              activation='relu')(encoded_pool)
     # encoder: compressing the input until the botneckle, encoded repre
-    encoder = K.models.Model(input_img, latent)
+    encoder = K.models.Model(input_img, encoded)
+    # encoder.summary()
 
     # decoded part of the model
     input_decoder = K.Input(shape=(latent_dims))
-    for i in range(len(filters)-1, -1, -1):
-        if i == len(filters)-1:
-            decoded = K.layers.Conv2D(filters=filters[i], kernel_size=3,
-                                      padding='same',
-                                      activation='relu')(input_decoder)
-            decoded_pool = K.layers.UpSampling2D(pool_size=[2, 2])(encoded)
+    decoded = K.layers.Conv2D(filters=filters[i], kernel_size=3,
+                              padding='same',
+                              activation='relu')(input_decoder)
+    decoded_pool = K.layers.UpSampling2D(size=[2, 2])(decoded)
+    for i in range(len(filters)-2, -1, -1):
         if i == 0:
             decoded = K.layers.Conv2D(filters=filters[i], kernel_size=3,
                                       padding='valid',
                                       activation='relu')(decoded_pool)
-            decoded_pool = K.layers.UpSampling2D(pool_size=[2, 2])(decoded)
+            decoded_pool = K.layers.UpSampling2D(size=[2, 2])(decoded)
         else:
             decoded = K.layers.Conv2D(filters=filters[i], kernel_size=3,
                                       padding='same',
                                       activation='relu')(decoded_pool)
-            decoded_pool = K.layers.UpSampling2D(pool_size=[2, 2])(decoded)
-    decoded = K.layers.Dense(filters=1, kernel_size=3,
-                             padding='same',
-                             activation='sigmoid')(decoded_pool)
-    # decoder: mappin the input to reconstruct and decoder the input.
+            decoded_pool = K.layers.UpSampling2D(size=[2, 2])(decoded)
+    decoded = K.layers.Conv2D(filters=1, kernel_size=3,
+                              padding='same',
+                              activation='sigmoid')(decoded_pool)
+    # decoder: mapp the input to reconstruct and decoder the input
     decoder = K.models.Model(input_decoder, decoded)
+    # decoder.summary()
 
     input_autoencoder = K.Input(shape=(input_dims))
     encoder_outs = encoder(input_autoencoder)
