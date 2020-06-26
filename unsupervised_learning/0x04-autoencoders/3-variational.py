@@ -21,10 +21,10 @@ def autoencoder(input_dims, hidden_layers, latent_dims):
     # creating the variational autoencoder model
 
     # encoded part of the model
-    input_img = K.Input(shape=(input_dims,))
+    input_x = K.Input(shape=(input_dims,))
     for i, layer in enumerate(hidden_layers):
         if i == 0:
-            encoded = K.layers.Dense(layer, activation='relu')(input_img)
+            encoded = K.layers.Dense(layer, activation='relu')(input_x)
         else:
             encoded = K.layers.Dense(layer, activation='relu')(encoded)
     # the botneckle layer: as result as a distribution prob, 2 arrays
@@ -34,16 +34,16 @@ def autoencoder(input_dims, hidden_layers, latent_dims):
 
     def sampling(args):
         z_mean, z_stand_des = args
-        epsilon = K.random_normal(shape=(latent_dims,),
-                                  mean=0., std=1.)
-        return z_mean + K.exp(z_stand_des) * epsilon
+        epsilon = K.backend.random_normal(shape=(latent_dims,),
+                                          mean=0.0, stddev=1.0)
+        return z_mean + K.backend.exp(z_stand_des) * epsilon
 
     # sampling the data from the data set using the z_mean and z_stand_dev
     z = K.layers.Lambda(sampling, output_shape=(
         latent_dims,))([z_mean, z_stand_des])
     # encoder part of the model take and image and get a sample based
     # on themean, standard desv
-    encoder = K.models.Model(input_img, z)
+    encoder = K.models.Model(input_x, z)
     encoder.summary()
 
     # decoded part of the model
@@ -66,13 +66,14 @@ def autoencoder(input_dims, hidden_layers, latent_dims):
     # mapping the complete autoencoded model, reconstruc the image
     autoencoder = K.models.Model(
         inputs=x, outputs=x_decoder_mean)
+    autoencoder.summary()
 
     def vae_loss(x, x_decoder_mean):
-        xent_loss = K.objectives.binary_crossentropy(x, x_decoder_mean)
-        kl_loss = - 0.5 * K.mean(1 + z_stand_des -
-                                 K.square(z_mean) -
-                                 K.exp(z_stand_des), axis=-1)
-        return xent_loss + kl_loss
+        x_loss = K.backend.binary_crossentropy(x, x_decoder_mean)
+        kl_loss = - 0.5 * K.backend.mean(1 + z_stand_des -
+                                         K.backend.square(z_mean) -
+                                         K.backend.exp(z_stand_des), axis=-1)
+        return x_loss + kl_loss
 
     autoencoder.compile(optimizer='Adam', loss=vae_loss)
 
