@@ -44,6 +44,7 @@ def autoencoder(input_dims, hidden_layers, latent_dims):
     # encoder part of the model take and image and get a sample based
     # on themean, standard desv
     encoder = K.models.Model(input_img, z)
+    encoder.summary()
 
     # decoded part of the model
     input_z = K.Input(shape=(latent_dims,))
@@ -57,6 +58,7 @@ def autoencoder(input_dims, hidden_layers, latent_dims):
     decoded = K.layers.Dense(input_dims, activation='sigmoid')(decoded)
     # decoder: generating an image based in the dataset
     decoder = K.models.Model(input_z, decoded)
+    decoder.summary()
 
     x = K.Input(shape=(input_dims,))
     z_encoder = encoder(x)
@@ -68,7 +70,8 @@ def autoencoder(input_dims, hidden_layers, latent_dims):
     def vae_loss(x, x_decoder_mean):
         xent_loss = K.objectives.binary_crossentropy(x, x_decoder_mean)
         kl_loss = - 0.5 * K.mean(1 + z_stand_des -
-                                 K.square(z_mean) - K.exp(z_stand_des), axis=-1)
+                                 K.square(z_mean) -
+                                 K.exp(z_stand_des), axis=-1)
         return xent_loss + kl_loss
 
     autoencoder.compile(optimizer='Adam', loss=vae_loss)

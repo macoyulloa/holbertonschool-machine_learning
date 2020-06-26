@@ -28,25 +28,27 @@ def autoencoder(input_dims, filters, latent_dims):
     # creating the convolutional autoencoder model
 
     # encoded part of the model
-    input_img = K.Input(shape=(input_dims))
-    encoded = K.layers.Conv2D(filters=filters[0], kernel_size=3,
+    input_encoder = K.Input(shape=input_dims)
+
+    encoded = K.layers.Conv2D(filters=filters[0],
+                              kernel_size=3,
                               padding='same',
-                              activation='relu')(input_img)
-    encoded_pool = K.layers.MaxPooling2D(pool_size=[2, 2])(encoded)
+                              activation='relu')(input_encoder)
+    encoded_pool = K.layers.MaxPool2D(
+        pool_size=(2, 2), padding='same')(encoded)
 
-    for i in range(1, len(filters)-1):
-        encoded = K.layers.Conv2D(filters=filters[i], kernel_size=3,
-                                  padding='valid',
+    for i in range(1, len(filters)):
+        encoded = K.layers.Conv2D(filters=filters[i],
+                                  kernel_size=3,
+                                  padding='same',
                                   activation='relu')(encoded_pool)
-        encoded_pool = K.layers.MaxPooling2D(pool_size=[2, 2])(encoded)
+        encoded_pool = K.layers.MaxPool2D(
+            pool_size=(2, 2), padding='same')(encoded)
 
-    # the botneckle layer, the latent space
-    encoded = K.layers.Conv2D(filters=filters[i], kernel_size=3,
-                              padding='valid',
-                              activation='relu')(encoded_pool)
+    latent = encoded_pool
     # encoder: compressing the input until the botneckle, encoded repre
-    encoder = K.models.Model(input_img, encoded)
-    # encoder.summary()
+    encoder = K.models.Model(input_encoder, latent)
+    encoder.summary()
 
     # decoded part of the model
     input_decoder = K.Input(shape=(latent_dims))
@@ -70,7 +72,7 @@ def autoencoder(input_dims, filters, latent_dims):
                               activation='sigmoid')(decoded_pool)
     # decoder: mapp the input to reconstruct and decoder the input
     decoder = K.models.Model(input_decoder, decoded)
-    # decoder.summary()
+    decoder.summary()
 
     input_autoencoder = K.Input(shape=(input_dims))
     encoder_outs = encoder(input_autoencoder)
