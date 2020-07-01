@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Recurrent Neural Network"""
+"""Gaited Recurrent Unit"""
 
 import numpy as np
 
 
-class RNNCell:
-    """RNNCell class, vanila model"""
+class GRUCell:
+    """CRUCell class, vanila model"""
 
     def __init__(self, i, h, o):
         """ initialized the variables
@@ -15,17 +15,34 @@ class RNNCell:
         - h: is the dimensionality of the hidden state
         - o: is the dimensionality of the outputs
 
-        - Public instance attributes Wh, Wy, bh, by that represent
-            the weights and biases of the cell
-            - Wh and bh: for the concat hidden state and input data
-            - Wy and by: are for the output
+        Public instance attributes: represent the weights and biases
+            Wz, Wr, Wh, Wy, bz, br, bh
+        - Wz and bz: are for the update gate
+        - Wr and br: are for the reset gate
+        - Wh and bh: are for the intermediate hidden state
+        - Wy and by: are for the output
         """
+        Whh = np.random.randn(h, h)
+        Whx = np.random.randn(i, h)
+        self.Wz = np.concatenate((Whh, Whx), axis=0)
+        Whh = np.random.randn(h, h)
+        Whx = np.random.randn(i, h)
+        self.Wr = np.concatenate((Whh, Whx), axis=0)
         Whh = np.random.randn(h, h)
         Whx = np.random.randn(i, h)
         self.Wh = np.concatenate((Whh, Whx), axis=0)
         self.Wy = np.random.randn(h, o)
+        self.bz = np.zeros((1, h))
+        self.br = np.zeros((1, h))
         self.bh = np.zeros((1, h))
         self.by = np.zeros((1, o))
+
+    def sigmoid(self, x):
+        """returns a sigmoid activation of the x array
+        Arg:
+        x: np.ndarray
+        """
+        return 1/(1 + np.exp(-x))
 
     def softmax(self, x):
         """Compute softmax values for each sets of scores in x."""
@@ -46,7 +63,11 @@ class RNNCell:
         - y: is the output of the cell
         """
         h_concat_x = np.concatenate((h_prev.T, x_t.T), axis=0)
-        h_next = np.tanh((np.matmul(h_concat_x.T, self.Wh)) + self.bh)
+        r = self.sigmoid(((np.matmul(h_concat_x.T, self.Wr)) + self.br))
+        updated = self.sigmoid(((np.matmul(h_concat_x.T, self.Wz)) + self.bz))
+        r_h_concat_x = np.concatenate(((r * h_prev).T, x_t.T), axis=0)
+        h_candidate = np.tanh((np.matmul(r_h_concat_x.T, self.Wh)) + self.bh)
+        h_next = updated * h_candidate + (1 - updated) * h_prev
         y = self.softmax((np.matmul(h_next, self.Wy)) + self.by)
 
         return h_next, y
