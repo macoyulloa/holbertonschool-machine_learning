@@ -75,7 +75,7 @@ class LSTMCell:
         output = self.sigmoid(((np.matmul(h_concat_x.T, self.Wo)) + self.bo))
         c_candidate = np.tanh((np.matmul(h_concat_x.T, self.Wc)) + self.bc)
         c_next = updated * c_candidate + forget * c_prev
-        h_next = output * c_next
+        h_next = output * np.tanh(c_next)
         y = self.softmax((np.matmul(h_next, self.Wy)) + self.by)
 
         return h_next, c_next, y
