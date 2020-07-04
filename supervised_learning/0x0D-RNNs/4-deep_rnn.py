@@ -23,17 +23,21 @@ def deep_rnn(rnn_cells, X, h_0):
         - Y: np.ndarray containing all of the outputs
     """
     time_steps, m, i = X.shape
+    layers, _, h = h_0.shape
     Y = []
 
-    H = h_0
+    H = np.zeros((time_steps+1, layers, m, h))
+    H[0, :, :, :] = h_0
+
     for t_step in range(time_steps):
-        for layer in range(len(rnn_cells)):
-            if t_step == 0:
-                h, y = rnn_cells[layer].forward(h_0[layer], X[0])
+        for layer in range(layers):
+            if layer == 0:
+                h, y = rnn_cells[layer].forward(H[t_step, layer], X[t_step])
             else:
-                h, y = rnn_cells[layer].forward(h[layer], X[t_step])
-        H = np.concatenate((H, h))
+                h, y = rnn_cells[layer].forward(H[t_step, layer], h)
+            H[t_step+1, layer, :, :] = h
         Y.append(y)
 
     Y = np.asarray(Y)
+
     return H, Y

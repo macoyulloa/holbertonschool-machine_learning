@@ -21,12 +21,14 @@ def rnn(rnn_cell, X, h_0):
         - Y: np.ndarray containing all of the outputs
     """
     time_steps, m, i = X.shape
-    Y, H = [], [h_0]
+    _, h = h_0.shape
 
+    Y = []
+    H = np.zeros((time_steps+1, m, h))
+    H[0, :, :] = h_0
     for t_step in range(time_steps):
         h, y = rnn_cell.forward(H[t_step], X[t_step])
-        H.append(h)
+        H[t_step+1, :, :] = h
         Y.append(y)
-    H = np.asarray(H)
     Y = np.asarray(Y)
     return H, Y
