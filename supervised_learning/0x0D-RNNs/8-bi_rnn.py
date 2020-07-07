@@ -32,7 +32,7 @@ def bi_rnn(bi_cell, X, h_0, h_t):
     for t_i in range(t):
         H_forward[t_i+1] = bi_cell.forward(H_forward[t_i], X[t_i])
     for t_j in range(t-1, -1, -1):
-        H_backward[t_j-1] = bi_cell.backward(H_backward[t_j], X[t_j])
+        H_backward[t_j] = bi_cell.backward(H_backward[t_j+1], X[t_j])
     H = np.concatenate((H_forward[1:], H_backward[0:t]), axis=2)
 
     Y = bi_cell.output(H)
