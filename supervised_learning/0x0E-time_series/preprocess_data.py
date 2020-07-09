@@ -84,17 +84,17 @@ def data_preprocessing(path_file):
     df['Close'] = df.resample('H').mean()
     df['Weighted_Price'] = df.resample('H').mean()
     df = df.dropna()
-    df = df.iloc[-366:]
+    df = df.iloc[-17000:]
 
     # selecting the features to take into account
-    features_consider = ['Open', 'Low', 'High',
-                         'Close', 'VolumeUSD',
+    features_consider = ['Low', 'High',
+                         'VolumeUSD',
                          'Weighted_Price']
     features = df[features_consider]
     # print(features.index)
     # features.index = lastYear_data['Timestamp']
 
-    TRAIN_SPLIT = 269
+    TRAIN_SPLIT = 10008
 
     # tf.random.set_seed(13)
     # standardize the dataset using the mean and standard deviation
@@ -104,7 +104,7 @@ def data_preprocessing(path_file):
     dataset = (dataset - data_mean) / data_std
 
     past_history = 24
-    future_target = 1
+    future_target = 0
     STEP = 1
     x_train, y_train = split_datasets(dataset, dataset[:, 3],
                                       0, TRAIN_SPLIT,
