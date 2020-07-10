@@ -14,13 +14,22 @@ data_preprocessing = __import__('preprocess_data').data_preprocessing
 
 
 def create_time_steps(length):
-    """
+    """ if there is time step to plot the data
+
+    Arg:
+        - length: the len of the dataset
     """
     return list(range(-length, 0))
 
 
 def plot_train_history(history, title):
-    """
+    """ ploting the training history
+
+    Arg:
+        - dataset already train, the train history
+        - the title of the plot
+
+    show the a plot with the trained data
     """
     loss = history.history['loss']
     val_loss = history.history['val_loss']
@@ -38,7 +47,14 @@ def plot_train_history(history, title):
 
 
 def show_plot(plot_data, delta, title):
-    """
+    """ploting datasets
+
+    Arg:
+        - plot_data: list of data to be ploted
+        - delta: the units of time of the data predicted
+        - title: the title of the plot
+
+    shows the data in a plot
     """
     labels = ['History', 'True Future', 'Model Prediction']
     marker = ['.-', 'rx', 'go']
@@ -67,9 +83,14 @@ def forecasting(x_train, y_train, x_val, y_val, BUFFER_SIZE,
     """ Forecasting model of the BTC price
 
         Arg:
-
-        Returns:
-
+        - x_train: np.ndarray, the x train dataset
+        - y_train: np.ndarray, the labels train dataset
+        - x_val: np.ndarray, the x validation dataset
+        - y_val: np.ndarray, the labels validation dataset
+        - BUFFER_SIZE:
+        - BATCH_SIZE: int size batch of the dataset
+        - EPOCHS: the number of epoch to train the data
+        - EVAL_INTERVAL:
     """
     train_data = tf.data.Dataset.from_tensor_slices((x_train, y_train))
     train_data = train_data.cache().shuffle(
@@ -94,9 +115,9 @@ def forecasting(x_train, y_train, x_val, y_val, BUFFER_SIZE,
                        'Single Step Training and validation loss')
 
     # Predict a single step future
-    for x, y in val_data.take(3):
+    for x, y in val_data.take(2):
         plot = show_plot([x[0][:, 1].numpy(), y[0].numpy(),
-                          single_step_model.predict(x)[0]], 12,
+                          single_step_model.predict(x)[0]], 1,
                          'Single Step Prediction')
     plot.show()
 
