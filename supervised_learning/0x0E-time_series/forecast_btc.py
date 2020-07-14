@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import pandas as pd
-data_preprocessing = __import__('preprocess_data').data_preprocessing
+preprocess_data = __import__('preprocess_data').preprocess_data
 
 
 def create_time_steps(length):
@@ -130,7 +130,7 @@ if __name__ == "__main__":
     EVAL_INTERVAL = 500
     EPOCHS = 20
     file_path = './bitstampUSD_1-min_data_2012-01-01_to_2020-04-22.csv'
-    dataset, features, x_train, y_train, x_val, y_val = data_preprocessing(
+    dataset, features, x_train, y_train, x_val, y_val = preprocess_data(
         file_path)
     print(dataset.shape)
     print(dataset)
