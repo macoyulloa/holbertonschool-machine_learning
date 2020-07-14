@@ -118,21 +118,3 @@ def preprocess_data(path_file):
                                   single_step=True)
 
     return dataset, features, x_train, y_train, x_val, y_val
-
-
-if __name__ == "__main__":
-    """
-    """
-    file_path = './bitstampUSD_1-min_data_2012-01-01_to_2020-04-22.csv'
-    dataset, features, x_train, y_train, x_val, y_val = preprocess_data(
-        file_path)
-    print('Single window of past history : {}'.format(x_train[0].shape))
-    print(dataset.shape)
-    print(dataset)
-    print("train: {}, y_train: {}, x_val: {}, y_val: {}".format(
-        x_train.shape, y_train.shape, x_val.shape, y_val.shape))
-    # ploting the features of the data
-    print(features.values)
-    print(features.index)
-    features.Weighted_Price.plot(subplots=True)
-    plt.show()
