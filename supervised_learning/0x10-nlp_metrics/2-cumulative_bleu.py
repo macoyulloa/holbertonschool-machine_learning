@@ -49,7 +49,7 @@ def ngram_bleu(references, sentence, n, n_precissions=[], reference_len=0):
         # get the less distante of the output len, of the sentence
         reference_len = min(references_len, key=lambda x: abs(x-output_len))
 
-        precission = np.exp(np.log(count_clip/n_output_len))
+        precission = (np.log(count_clip/n_output_len))
 
         n_precissions.append(precission)
         return (ngram_bleu(references, sentence, n-1,
@@ -72,12 +72,11 @@ def cumulative_bleu(references, sentence, n):
     """
     output_len = len(sentence)
 
+    # getting the array with the precission of each n-gram until n
     n_precissions, reference_len = ngram_bleu(references, sentence, n)
-    print(n_precissions)
-    print(reference_len)
     n_precissions = np.asarray(n_precissions)
     n_precissions /= n
-    precission = np.sum(n_precissions)
+    precission = np.exp(np.sum(n_precissions))
 
     # find the bp of the model, breverty penalty of the model
     if output_len > reference_len:
