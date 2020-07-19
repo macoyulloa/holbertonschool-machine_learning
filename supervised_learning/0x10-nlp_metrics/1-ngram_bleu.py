@@ -21,13 +21,19 @@ def ngram_bleu(references, sentence, n):
     counts_clip = {}
 
     # n-sentence pass to the grams that we need
-    n_sentence = [(str(sentence[i]) + ' ' + str(sentence[i+1]))
+    n_sentence = [' '.join([str(j) for j in sentence[i:i+n]])
                   for i in range(len(sentence)-(n-1))]
+
+    # n_sentence = [(str(sentence[i]) + ' ' + str(sentence[i+1]))
+    #              for i in range(len(sentence)-(n-1))]
     n_output_len = len(n_sentence)
 
     for reference in references:
-        n_reference = [(str(reference[i]) + ' ' + str(reference[i+1]))
-                       for i in range(len(reference)-(n-1))]
+        n_reference = [' '.join([str(j) for j in reference[i:i+n]])
+                       for i in range(len(sentence)-(n-1))]
+
+        # n_reference = [(str(reference[i]) + ' ' + str(reference[i+1]))
+        #               for i in range(len(reference)-(n-1))]
 
         references_len.append(len(reference))
         for word in n_reference:
