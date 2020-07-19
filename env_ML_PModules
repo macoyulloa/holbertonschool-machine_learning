@@ -37,6 +37,10 @@ pip install --user gpyopt
 #  installing tensorflow
 pip install --user tensorflow==1.12
 
+# word embedding library
+pip install --user gensim==3.8
+
+
 # install dlib 19.17.0 for face-recognition
 # if it is necesary uncomment the line:
 # sudo apt-get update
