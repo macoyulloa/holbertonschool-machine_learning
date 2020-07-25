@@ -22,7 +22,7 @@ class SelfAttention(tf.keras.layers.Layer):
         - V: Dense layer with 1 units, to be applied to the tanh
                 of the sum of the outputs of W and U
         """
-        super(RNNEncoder, self).__init__()
+        super(SelfAttention, self).__init__()
         self.W = tf.keras.layers.Dense(units)
         self.U = tf.keras.layers.Dense(units)
         self.V = tf.keras.layers.Dense(1)
@@ -43,10 +43,11 @@ class SelfAttention(tf.keras.layers.Layer):
         - weights: tensor of shape (batch, input_seq_len, 1) that contains the
                     attention weights
         """
-        s_w = tf.tensordot(s_prev, self.W)
-        h_u = tf.tensordot(hidden_states, self.U)
-        e = tf.nn.tanh(s_w + h_u) * self.V
-        attention = tf.nn.softmax(e)
+        w = self.W(s_prev)
+        u = self.U(hidden_states)
+        w = tf.expand_dims(w, axis=1)
+        e = self.V((tf.nn.tanh(w + u)))
+        attention = tf.nn.softmax(e, axis=1)
         c = tf.reduce_sum((attention * hidden_states), axis=1)
 
         return c, attention
