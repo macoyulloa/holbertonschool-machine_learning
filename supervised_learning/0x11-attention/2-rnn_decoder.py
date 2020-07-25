@@ -49,9 +49,9 @@ class RNNDecoder(tf.keras.layers.Layer):
                 containing the outputs of the encoder
 
         Return:
-        - y: tensor of shape (batch, vocab) containing the output word as a one hot
+        - y: tensor of shape (batch, vocab) with the output word as a one hot
                 vector in the target vocabulary
-        - s: is a tensor of shape (batch, units) with the new decoder hidden state
+        - s: tensor of shape (batch, units) with the new decoder hidden state
         """
         embedding = self.embedding(x)
         attention = SelfAttention(s_prev.shape[1])
