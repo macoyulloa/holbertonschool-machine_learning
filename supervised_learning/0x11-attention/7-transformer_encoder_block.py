@@ -2,7 +2,7 @@
 """ Transformers Vanilla Model """
 
 import tensorflow as tf
-MultiHeadAttention = __import__('6-multihead_attention').MultiHeadAttention
+MultiHeadAttention = __import__('6-multi_head_attention').MultiHeadAttention
 
 
 class EncoderBlock(tf.keras.layers.Layer):
@@ -50,13 +50,12 @@ class EncoderBlock(tf.keras.layers.Layer):
         Return:
         - tensor of shape (batch, input_seq_len, dm) with the block’s output
         """
-        input = self.dense_hidden(x)
-        self.mha()
-        if training:
-            self.dropout1()
-        self.layernorm1()
-        self.dense_output()
-        if training:
-            self.dropout2()
-        self.layernorm2()
-        return 1
+        attn_output, _ = self.mha(x, x, x, mask)
+        attn_output = self.dropout1(attn_output, training=training)
+        out1 = self.layernorm1(x + attn_output)
+        ffn_output = self.dense_hidden(out1)
+        ffn_output = self.dense_output(ffn_output)
+        ffn_output = self.dropout2(ffn_output, training=training)
+        out2 = self.layernorm2(out1 + ffn_output)
+
+        return out2
