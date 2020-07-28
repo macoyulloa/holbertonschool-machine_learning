@@ -1,4 +1,3 @@
-$ cat 9-main.py
 #!/usr/bin/env python3
 
 import tensorflow as tf

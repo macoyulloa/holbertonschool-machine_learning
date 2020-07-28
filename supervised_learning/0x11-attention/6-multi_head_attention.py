@@ -55,27 +55,24 @@ class MultiHeadAttention(tf.keras.layers.Layer):
         - weights: a tensor with its last three dimensions as
             (..., h, seq_len_q, seq_len_v) containing the attention weights
         """
-        v_list, k_list, q_list = [], [], []
+        batch = V.shape[0]
+
         V_linear = self.Wv(V)
         K_linear = self.Wk(K)
         Q_linear = self.Wq(Q)
 
-        v_list = tf.split(V_linear, self.h, axis=-1)
-        k_list = tf.split(K_linear, self.h, axis=-1)
-        q_list = tf.split(Q_linear, self.h, axis=-1)
+        V = tf.reshape(V_linear, [batch, -1, self.h, self.depth])
+        K = tf.reshape(K_linear, [batch, -1, self.h, self.depth])
+        Q = tf.reshape(Q_linear, [batch, -1, self.h, self.depth])
 
-        output, weight = sdp_attention(
-            q_list[0], k_list[0], v_list[0], mask)
-        weight = tf.expand_dims(weight, 1)
+        V = tf.transpose(V, perm=[0,2,1,3])
+        K = tf.transpose(K, perm=[0,2,1,3])
+        Q = tf.transpose(Q, perm=[0,2,1,3])
 
-        for i in range(1, self.h):
-            output_s, weight_s = sdp_attention(
-                q_list[i], k_list[i], v_list[i], mask)
-            weight_s = tf.expand_dims(weight_s, 1)
-            output = tf.concat([output, output_s], axis=-1)
-            weight = tf.concat([weight, weight_s], axis=1)
+        output, weights = sdp_attention(Q, K, V, mask)
 
+        output = tf.transpose(output, perm=[0, 2, 1, 3])
+        output = tf.reshape(output, (batch, -1, self.dm))
         outputs = self.linear(output)
-        weights = tf.nn.softmax(weight)
 
         return outputs, weights
