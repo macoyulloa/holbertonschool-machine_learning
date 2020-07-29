@@ -31,7 +31,7 @@ class RNNEncoder(tf.keras.layers.Layer):
         self.embedding = tf.keras.layers.Embedding(
             vocab, embedding)
         self.gru = tf.keras.layers.GRU(
-            self.units,
+            units,
             recurrent_initializer="glorot_uniform",
             return_sequences=True,
             return_state=True)
@@ -40,8 +40,9 @@ class RNNEncoder(tf.keras.layers.Layer):
         """ Initializes the hidden states for the RNN cell to
             a tensor of zeros
         """
-        return tf.zeros(
-            (self.batch, self.units), dtype=tf.dtypes.float32)
+        initializer = tf.keras.initializers.Zeros()
+        hidden_init_matrix = initializer(shape=(self.batch, self.units))
+        return hidden_init_matrix
 
     def call(self, x, initial):
         """ Calling the GRU RNN model to construct the encoding part of the
