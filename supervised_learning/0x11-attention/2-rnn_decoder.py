@@ -53,12 +53,21 @@ class RNNDecoder(tf.keras.layers.Layer):
                 vector in the target vocabulary
         - s: tensor of shape (batch, units) with the new decoder hidden state
         """
+        # embedding the input x
         embedding = self.embedding(x)
+        # self-attention of the inputs per state
         attention = SelfAttention(s_prev.shape[1])
+        # get the attention of the inputs
         context, weights = attention(s_prev, hidden_states)
+        # getting the context per each input, decoder part
         context = tf.expand_dims(context, axis=1)
+        # concat the context plus the embedding to pass thought the model
         inputs = tf.concat([embedding, context], -1)
-        decode_outs, s = self.gru(inputs,
-                                  initial_state=hidden_states[:, -1])
-        y = self.F(decode_outs)
-        return y, s
+        decode_outs, state = self.gru(inputs,
+                                      initial_state=hidden_states[:, -1])
+        # get the outputs of the RNN attention model
+        y = tf.reshape((decode_outs), [-1, decode_outs.shape[2]])
+        # reduce the output to the vocab len
+        y = self.F(y)
+
+        return y, state
