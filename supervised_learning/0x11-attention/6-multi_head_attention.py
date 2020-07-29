@@ -65,9 +65,9 @@ class MultiHeadAttention(tf.keras.layers.Layer):
         K = tf.reshape(K_linear, [batch, -1, self.h, self.depth])
         Q = tf.reshape(Q_linear, [batch, -1, self.h, self.depth])
 
-        V = tf.transpose(V, perm=[0,2,1,3])
-        K = tf.transpose(K, perm=[0,2,1,3])
-        Q = tf.transpose(Q, perm=[0,2,1,3])
+        V = tf.transpose(V, perm=[0, 2, 1, 3])
+        K = tf.transpose(K, perm=[0, 2, 1, 3])
+        Q = tf.transpose(Q, perm=[0, 2, 1, 3])
 
         output, weights = sdp_attention(Q, K, V, mask)
 
