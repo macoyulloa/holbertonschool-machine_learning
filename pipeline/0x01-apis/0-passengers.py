@@ -17,8 +17,7 @@ def availableShips(passengerCount):
         results = page['results']
         for ship in results:
             passengers = ship['passengers']
-            if passengers.isnumeric():
-                if int(passengers) >= passengerCount:
-                    ships.append(ship["name"])
+            if (passengers.isnumeric() and int(passengers) >= passengerCount):
+                ships.append(ship["name"])
         url = page["next"]
     return ships
